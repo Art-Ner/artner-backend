@@ -2,6 +2,7 @@ package kr.artner.global.config;
 
 import kr.artner.global.auth.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,9 +47,17 @@ public class SecurityConfig {
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         var configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:8080");  // Spring Boot 개발서버
+        
+        // 환경변수에서 허용된 오리진 읽어와서 추가
+        String[] origins = allowedOrigins.split(",");
+        for (String origin : origins) {
+            configuration.addAllowedOrigin(origin.trim());
+        }
+        
+        // 기본 프로덕션 도메인 추가
         configuration.addAllowedOrigin("https://artner.kr");
         configuration.addAllowedOriginPattern("https://*.artner.kr");
+        
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
