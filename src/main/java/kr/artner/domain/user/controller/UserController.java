@@ -29,9 +29,6 @@ public class UserController {
     public ApiResponse<TokenDto> join(@RequestBody @Valid UserRequest.JoinDTO request) {
         UserResponse.JoinResponse joinResponse = userService.join(request);
         TokenDto tokens = jwtTokenProvider.generateToken(joinResponse.getId());
-        
-        log.info("회원가입 완료: email={}, username={}, oauthProvider={}", 
-                request.getEmail(), request.getUsername(), request.getOauthProvider());
         return ApiResponse.success(tokens);
     }
 
@@ -57,14 +54,8 @@ public class UserController {
     ) {
         String imageUrl = s3Service.uploadProfileImage(file);
         
-        // 기존 프로필 업데이트 (이미지 URL만 변경)
-        UserRequest.UpdateProfile updateRequest = new UserRequest.UpdateProfile(
-                user.getUsername(), 
-                user.getPhone()
-        );
-        userService.updateProfile(user.getId(), updateRequest);
-        
-        UserResponse.DetailInfoDTO response = userService.getMyInfo(user.getId());
+        // 프로필 이미지 URL 업데이트
+        UserResponse.DetailInfoDTO response = userService.updateProfileImage(user.getId(), imageUrl);
         return ApiResponse.success(response);
     }
 

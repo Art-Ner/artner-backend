@@ -24,32 +24,20 @@ public class UserService {
 
     @Transactional
     public UserResponse.JoinResponse join(UserRequest.JoinDTO request) {
-        log.info("회원가입 시작: email={}, username={}", request.getEmail(), request.getUsername());
-        
         boolean emailExists = userRepository.existsByEmail(request.getEmail());
-        log.info("이메일 존재 여부 체크: email={}, exists={}", request.getEmail(), emailExists);
-        
+
         Optional.of(request.getEmail())
                 .filter(email -> !emailExists)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_DUPLICATE_BY_EMAIL));
         
         boolean usernameExists = userRepository.existsByUsername(request.getUsername());
-        log.info("사용자명 존재 여부 체크: username={}, exists={}", request.getUsername(), usernameExists);
-        
+
         if (usernameExists) {
             throw new GeneralException(ErrorStatus.MEMBER_DUPLICATE_BY_USERNAME);
         }
-
         User newUser = userConverter.toEntity(request);
-        log.info("Entity 생성 완료: {}", newUser);
-        
         User savedUser = userRepository.save(newUser);
-        log.info("DB 저장 완료: id={}, email={}", savedUser.getId(), savedUser.getEmail());
-        
-        UserResponse.JoinResponse response = userConverter.toJoinResponse(savedUser);
-        log.info("응답 생성 완료: {}", response);
-        
-        return response;
+        return userConverter.toJoinResponse(savedUser);
     }
 
     @Transactional(readOnly = true)
@@ -74,6 +62,13 @@ public class UserService {
         
         user.updateProfile(newUsername, request.getPhone());
         return userConverter.toUpdateResponse(user);
+    }
+
+    @Transactional
+    public UserResponse.DetailInfoDTO updateProfileImage(Long userId, String profileImageUrl) {
+        User user = getUserOrThrow(userId);
+        user.updateProfileImage(profileImageUrl);
+        return userConverter.toDetailInfo(user);
     }
 
     @Transactional
