@@ -1,11 +1,11 @@
-package kr.artner.domain.user;
+package kr.artner.domain.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Role {
+public enum UserRole {
     USER("일반 사용자"),
     ADMIN("관리자");
 

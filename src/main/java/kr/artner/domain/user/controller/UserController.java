@@ -1,9 +1,9 @@
 package kr.artner.domain.user.controller;
 
 import jakarta.validation.Valid;
-import kr.artner.domain.user.User;
 import kr.artner.domain.user.dto.UserRequest;
 import kr.artner.domain.user.dto.UserResponse;
+import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.service.UserService;
 import kr.artner.global.auth.LoginMember;
 import kr.artner.global.auth.jwt.JwtTokenProvider;

@@ -1,7 +1,9 @@
 package kr.artner.domain.user.dto;
 
-import kr.artner.domain.user.Role;
-import kr.artner.domain.user.User;
+import kr.artner.domain.common.enums.OAuthProvider;
+import kr.artner.domain.common.enums.UserRole;
+import kr.artner.domain.user.entity.User;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +16,7 @@ public class UserConverter {
                 .phone(request.getPhone())
                 .profileImageUrl(request.getProfileImageUrl())
                 .oauthProvider(request.getOauthProvider())
-                .role(Role.USER)
+                .role(UserRole.USER)
                 .build();
     }
 

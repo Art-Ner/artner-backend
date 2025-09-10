@@ -1,7 +1,9 @@
-package kr.artner.domain.user;
+package kr.artner.domain.user.entity;
 
 import jakarta.persistence.*;
 import kr.artner.domain.common.BaseRDBEntity;
+import kr.artner.domain.common.enums.OAuthProvider;
+import kr.artner.domain.common.enums.UserRole;
 import lombok.*;
 
 @Entity
@@ -32,10 +34,10 @@ public class User extends BaseRDBEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private UserRole role;
 
     @Builder
-    private User(String email, String username, String phone, String profileImageUrl, OAuthProvider oauthProvider, Role role) {
+    private User(String email, String username, String phone, String profileImageUrl, OAuthProvider oauthProvider, UserRole role) {
         this.email = email;
         this.username = username;
         this.phone = phone;

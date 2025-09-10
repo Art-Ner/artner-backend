@@ -1,6 +1,6 @@
 package kr.artner.global.auth;
 
-import kr.artner.domain.user.User;
+import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

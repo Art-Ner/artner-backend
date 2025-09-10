@@ -1,9 +1,9 @@
 package kr.artner.global.auth.oauth.service;
 
-import java.util.Map;
 import java.util.Optional;
 
-import kr.artner.domain.user.User;
+
+import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.repository.UserRepository;
 import kr.artner.global.auth.jwt.JwtTokenProvider;
 import kr.artner.global.auth.jwt.dto.TokenReissueRequest;

@@ -1,4 +1,4 @@
-package kr.artner.domain.user;
+package kr.artner.domain.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

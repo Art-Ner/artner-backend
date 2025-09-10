@@ -1,9 +1,9 @@
 package kr.artner.domain.user.service;
 
-import kr.artner.domain.user.User;
 import kr.artner.domain.user.dto.UserConverter;
 import kr.artner.domain.user.dto.UserRequest;
 import kr.artner.domain.user.dto.UserResponse;
+import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.repository.UserRepository;
 import kr.artner.global.exception.ErrorStatus;
 import kr.artner.global.exception.GeneralException;
