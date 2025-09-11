@@ -25,11 +25,15 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final S3Service s3Service;
 
-    @PostMapping("/join")
-    public ApiResponse<TokenDto> join(@RequestBody @Valid UserRequest.JoinDTO request) {
-        UserResponse.JoinResponse joinResponse = userService.join(request);
-        TokenDto tokens = jwtTokenProvider.generateToken(joinResponse.getId());
-        return ApiResponse.success(tokens);
+    @GetMapping("/projects")
+    public ApiResponse<?> getMyProjects(
+            @LoginMember User user,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit,
+            @RequestParam(value = "status", required = false) String status
+    ) {
+        // TODO: 실제 서비스 로직 구현 필요
+        return ApiResponse.success(null);
     }
 
     @GetMapping("/me")
@@ -62,6 +66,18 @@ public class UserController {
     @DeleteMapping("/me")
     public ApiResponse<Void> deleteUser(@LoginMember User user) {
         userService.deleteUser(user.getId());
+        return ApiResponse.success(null);
+    }
+
+    @PostMapping("/artist-profile")
+    public ApiResponse<?> createArtistProfile(@LoginMember User user) {
+        // TODO: 실제 서비스 로직 구현 필요
+        return ApiResponse.success(null);
+    }
+
+    @PostMapping("/venue-admin-profile")
+    public ApiResponse<?> createVenueAdminProfile(@LoginMember User user) {
+        // TODO: 실제 서비스 로직 구현 필요
         return ApiResponse.success(null);
     }
 }
