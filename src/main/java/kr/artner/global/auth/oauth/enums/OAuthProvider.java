@@ -1,4 +1,4 @@
-package kr.artner.domain.common.enums;
+package kr.artner.global.auth.oauth.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

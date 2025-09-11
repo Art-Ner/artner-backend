@@ -1,7 +1,8 @@
-package kr.artner.domain.user.entity;
+package kr.artner.domain.bookmark.entity;
 
 import jakarta.persistence.*;
-import kr.artner.domain.common.enums.BookmarkTargetType;
+import kr.artner.domain.bookmark.enums.BookmarkTargetType;
+import kr.artner.domain.user.entity.User;
 import lombok.*;
 import java.time.LocalDateTime;
 

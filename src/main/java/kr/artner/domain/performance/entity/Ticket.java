@@ -2,8 +2,8 @@ package kr.artner.domain.performance.entity;
 
 import jakarta.persistence.*;
 import kr.artner.domain.performance.entity.Performance;
+import kr.artner.domain.ticket.enums.TicketStatus;
 import kr.artner.domain.user.entity.User;
-import kr.artner.domain.common.enums.TicketStatus;
 import lombok.*;
 import java.time.LocalDateTime;
 

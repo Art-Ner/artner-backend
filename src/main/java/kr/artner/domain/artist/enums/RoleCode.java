@@ -1,4 +1,4 @@
-package kr.artner.domain.common.enums;
+package kr.artner.domain.artist.enums;
 
 public enum RoleCode {
     VOCAL,      // 보컬

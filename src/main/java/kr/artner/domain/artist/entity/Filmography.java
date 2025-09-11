@@ -1,18 +1,20 @@
-package kr.artner.domain.user.entity;
+package kr.artner.domain.artist.entity;
 
 import jakarta.persistence.*;
+import kr.artner.domain.user.entity.User;
 import lombok.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_reviews", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "target_user_id"})
+@Table(name = "filmography", indexes = {
+        @Index(name = "ix_filmography_user", columnList = "user_id, created_at")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class UserReview {
+public class Filmography {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,12 +23,17 @@ public class UserReview {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_user_id", nullable = false)
-    private User targetUser;
+    @Column(length = 150, nullable = false)
+    private String title;
 
-    @Column(length = 500, nullable = false)
-    private String content;
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "released_at", nullable = false)
+    private LocalDate releasedAt;
+
+    @Column(name = "media_url", length = 255)
+    private String mediaUrl;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

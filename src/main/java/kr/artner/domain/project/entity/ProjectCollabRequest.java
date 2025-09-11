@@ -1,7 +1,7 @@
 package kr.artner.domain.project.entity;
 
 import jakarta.persistence.*;
-import kr.artner.domain.common.enums.CollabStatus;
+import kr.artner.domain.project.enums.CollabStatus;
 import kr.artner.domain.user.entity.User;
 import lombok.*;
 import java.time.LocalDateTime;

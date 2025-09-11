@@ -16,7 +16,7 @@ public class VenueController {
     public ResponseEntity<?> deleteVenue(@PathVariable Long venueId) { return ResponseEntity.ok().build(); }
 
     @GetMapping
-    public ResponseEntity<?> getVenues() { return ResponseEntity.ok().build(); }
+    public ResponseEntity<?> getVenues(@RequestParam(value = "keyword", required = false) String keyword) { return ResponseEntity.ok().build(); }
 
     @GetMapping("/{venueId}")
     public ResponseEntity<?> getVenueDetail(@PathVariable Long venueId) { return ResponseEntity.ok().build(); }

@@ -1,7 +1,7 @@
 package kr.artner.domain.venue.entity;
 
 import jakarta.persistence.*;
-import kr.artner.domain.common.enums.AvailabilityKind;
+import kr.artner.domain.venue.enums.AvailabilityKind;
 import lombok.*;
 import java.time.LocalDateTime;
 

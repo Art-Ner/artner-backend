@@ -1,6 +1,7 @@
-package kr.artner.domain.user.entity;
+package kr.artner.domain.venue.entity;
 
 import jakarta.persistence.*;
+import kr.artner.domain.user.entity.User;
 
 @Entity
 @Table(name = "venue_admin_profile")

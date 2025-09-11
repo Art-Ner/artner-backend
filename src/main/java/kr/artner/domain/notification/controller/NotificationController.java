@@ -10,7 +10,15 @@ public class NotificationController {
     public ResponseEntity<?> sendNotification() { return ResponseEntity.ok().build(); }
 
     @GetMapping
-    public ResponseEntity<?> getNotifications() { return ResponseEntity.ok().build(); }
+    public ResponseEntity<?> getNotifications(
+            @RequestParam(value = "user_id", required = false) Long userId,
+            @RequestParam(value = "kind", required = false) String kind,
+            @RequestParam(value = "is_read", required = false) Boolean isRead,
+            @RequestParam(value = "limit", required = false) Integer limit,
+            @RequestParam(value = "offset", required = false) Integer offset,
+            @RequestParam(value = "date_from", required = false) String dateFrom, // Consider using LocalDate or LocalDateTime
+            @RequestParam(value = "date_to", required = false) String dateTo    // Consider using LocalDate or LocalDateTime
+    ) { return ResponseEntity.ok().build(); }
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> readNotification(@PathVariable Long id) { return ResponseEntity.ok().build(); }

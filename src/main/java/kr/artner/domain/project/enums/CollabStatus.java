@@ -1,4 +1,4 @@
-package kr.artner.domain.common.enums;
+package kr.artner.domain.project.enums;
 
 public enum CollabStatus {
     PENDING,

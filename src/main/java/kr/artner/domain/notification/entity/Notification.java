@@ -1,19 +1,19 @@
-package kr.artner.domain.user.entity;
+package kr.artner.domain.notification.entity;
 
 import jakarta.persistence.*;
+import kr.artner.domain.user.entity.User;
 import lombok.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "filmography", indexes = {
-        @Index(name = "ix_filmography_user", columnList = "user_id, created_at")
+@Table(name = "notifications", indexes = {
+        @Index(name = "ix_noti_user", columnList = "user_id, is_read, created_at")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Filmography {
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,21 +22,19 @@ public class Filmography {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(length = 50, nullable = false)
+    private String kind;
+
     @Column(length = 150, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String body;
 
-    @Column(name = "released_at", nullable = false)
-    private LocalDate releasedAt;
-
-    @Column(name = "media_url", length = 255)
-    private String mediaUrl;
+    @Column(name = "is_read", nullable = false)
+    @Builder.Default
+    private boolean isRead = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
 }

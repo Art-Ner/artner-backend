@@ -2,7 +2,7 @@ package kr.artner.domain.project.entity;
 
 import jakarta.persistence.*;
 import kr.artner.domain.common.enums.GenreCode;
-import kr.artner.domain.common.enums.ProjectStatus;
+import kr.artner.domain.project.enums.ProjectStatus;
 import kr.artner.domain.user.entity.User;
 import lombok.*;
 import java.time.LocalDateTime;

@@ -80,4 +80,10 @@ public class UserController {
         // TODO: 실제 서비스 로직 구현 필요
         return ApiResponse.success(null);
     }
+
+    @GetMapping("/me/rented-venues")
+    public ApiResponse<?> getRentedVenues(@LoginMember User user) {
+        // TODO: 내가 대관한 공간 목록 조회
+        return ApiResponse.success(null);
+    }
 }

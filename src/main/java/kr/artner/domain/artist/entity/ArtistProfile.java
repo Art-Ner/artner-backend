@@ -1,6 +1,7 @@
-package kr.artner.domain.user.entity;
+package kr.artner.domain.artist.entity;
 
 import jakarta.persistence.*;
+import kr.artner.domain.user.entity.User;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package kr.artner.domain.common.enums;
+package kr.artner.domain.bookmark.enums;
 
 public enum BookmarkTargetType {
     PROJECT,

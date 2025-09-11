@@ -1,9 +1,8 @@
 package kr.artner.domain.user.dto;
 
-import kr.artner.domain.common.enums.OAuthProvider;
-import kr.artner.domain.common.enums.UserRole;
+import kr.artner.global.auth.oauth.enums.OAuthProvider;
 import kr.artner.domain.user.entity.User;
-
+import kr.artner.domain.user.enums.UserRole;
 import org.springframework.stereotype.Component;
 
 @Component

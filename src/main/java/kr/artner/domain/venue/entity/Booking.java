@@ -1,9 +1,9 @@
 package kr.artner.domain.venue.entity;
 
 import jakarta.persistence.*;
-import kr.artner.domain.common.enums.BookingStatus;
 import kr.artner.domain.project.entity.Project;
 import kr.artner.domain.user.entity.User;
+import kr.artner.domain.venue.enums.BookingStatus;
 import lombok.*;
 import java.time.LocalDateTime;
 

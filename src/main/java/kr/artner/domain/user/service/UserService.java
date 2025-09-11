@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import kr.artner.global.auth.oauth.enums.OAuthProvider; // Import OAuthProvider
+import kr.artner.domain.user.enums.UserRole; // Import UserRole
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -60,7 +63,7 @@ public class UserService {
             }
         }
         
-        user.updateProfile(newUsername, request.getPhone());
+        user.updateProfile(newUsername, request.getPhone(), request.getNickname());
         return userConverter.toUpdateResponse(user);
     }
 
@@ -80,5 +83,20 @@ public class UserService {
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+    }
+
+    @Transactional
+    public User findOrCreateUser(String email, String username, OAuthProvider oauthProvider) {
+        return userRepository.findByOauthProviderAndEmail(oauthProvider, email)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(email)
+                            .username(username)
+                            .nickname(username) // Default nickname to username
+                            .oauthProvider(oauthProvider)
+                            .role(UserRole.USER) // Default role to USER
+                            .build();
+                    return userRepository.save(newUser);
+                });
     }
 }
