@@ -2,11 +2,19 @@ package kr.artner.domain.artist.entity;
 
 import jakarta.persistence.*;
 import kr.artner.domain.user.entity.User;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.util.List;
 
 @Entity
 @Table(name = "artist_profile")
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ArtistProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +40,4 @@ public class ArtistProfile {
     @CollectionTable(name = "artist_profile_urls", joinColumns = @JoinColumn(name = "artist_profile_id"))
     @Column(name = "url")
     private List<String> urls;
-
-    // ...getter, setter, equals, hashCode, toString...
 }

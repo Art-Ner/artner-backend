@@ -26,30 +26,4 @@ public class ArtistRole {
     @MapsId("roleCode") // Maps the roleCode from the embedded id
     @Column(name = "role_code", nullable = false)
     private RoleCode roleCode;
-
-    // Getters and setters (Lombok will generate them with @Getter, @Setter if added)
-    // For now, I'll just add them manually for clarity if needed, or rely on Lombok.
-    public ArtistRoleId getId() {
-        return id;
-    }
-
-    public void setId(ArtistRoleId id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public RoleCode getRoleCode() {
-        return roleCode;
-    }
-
-    public void setRoleCode(RoleCode roleCode) {
-        this.roleCode = roleCode;
-    }
 }

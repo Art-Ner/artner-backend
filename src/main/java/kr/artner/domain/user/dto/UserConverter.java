@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserConverter {
-    
+
     public User toEntity(UserRequest.JoinDTO request) {
         return User.builder()
                 .email(request.getEmail())
@@ -42,6 +42,13 @@ public class UserConverter {
         return UserResponse.UpdateResponse.builder()
                 .username(user.getUsername())
                 .phone(user.getPhone())
+                .build();
+    }
+
+    public static UserResponse.GetUserInfoResponse toGetUserInfoResponse(User user) {
+        return UserResponse.GetUserInfoResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
                 .build();
     }
 }

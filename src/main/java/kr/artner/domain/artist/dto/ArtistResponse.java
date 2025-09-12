@@ -1,5 +1,24 @@
 package kr.artner.domain.artist.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
 public class ArtistResponse {
-    // TODO: 아티스트 관련 응답 DTO 구현
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetArtistProfileResponse {
+        private Long id;
+        private String artistName;
+        private String profileImageUrl;
+        private String headline;
+        private String bio;
+        private List<String> urls;
+    }
 }

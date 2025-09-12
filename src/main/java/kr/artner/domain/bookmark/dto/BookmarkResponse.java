@@ -1,5 +1,22 @@
 package kr.artner.domain.bookmark.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
 public class BookmarkResponse {
-    // TODO: 북마크 관련 응답 DTO 구현
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetBookmarkResponse {
+        private Long id;
+        private String targetType;
+        private Long targetId;
+        private LocalDateTime createdAt;
+    }
 }

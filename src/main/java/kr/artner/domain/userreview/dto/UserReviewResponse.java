@@ -1,5 +1,24 @@
 package kr.artner.domain.userreview.dto;
 
+import kr.artner.domain.user.dto.UserResponse;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
 public class UserReviewResponse {
-    // TODO: 유저리뷰 관련 응답 DTO 구현
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetUserReviewResponse {
+        private Long id;
+        private UserResponse.GetUserInfoResponse user;
+        private UserResponse.GetUserInfoResponse targetUser;
+        private String content;
+        private LocalDateTime createdAt;
+    }
 }
