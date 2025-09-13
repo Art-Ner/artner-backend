@@ -8,7 +8,9 @@ public enum ErrorStatus {
     MEMBER_NOT_REGISTERED_BY_GOOGLE("MEMBER_NOT_REGISTERED_BY_GOOGLE", "Google로 등록되지 않은 회원입니다"),
     MEMBER_DUPLICATE_BY_EMAIL("MEMBER_DUPLICATE_BY_EMAIL", "이미 존재하는 이메일입니다"),
     MEMBER_DUPLICATE_BY_USERNAME("MEMBER_DUPLICATE_BY_USERNAME", "이미 존재하는 사용자명입니다"),
-    MEMBER_NOT_EXIST("MEMBER_NOT_EXIST", "존재하지 않는 회원입니다");
+    MEMBER_NOT_EXIST("MEMBER_NOT_EXIST", "존재하지 않는 회원입니다"),
+    GOOGLE_OAUTH_ERROR("GOOGLE_OAUTH_ERROR", "구글 로그인 중 오류가 발생했습니다."),
+    KAKAO_OAUTH_ERROR("KAKAO_OAUTH_ERROR", "카카오 로그인 중 오류가 발생했습니다.");
 
     private final String code;
     private final String message;
