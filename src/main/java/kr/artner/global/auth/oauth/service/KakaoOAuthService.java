@@ -4,12 +4,24 @@ import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.service.UserService;
 import kr.artner.global.auth.jwt.JwtTokenProvider;
 import kr.artner.global.auth.jwt.dto.TokenResponse.TokenDto;
-import kr.artner.global.auth.oauth.enums.OAuthProvider; // Import OAuthProvider
+import kr.artner.global.auth.oauth.dto.KakaoTokenResponse;
+import kr.artner.global.auth.oauth.dto.KakaoUserInfo;
+import kr.artner.global.auth.oauth.enums.OAuthProvider;
+import kr.artner.global.exception.ErrorStatus;
+import kr.artner.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -31,36 +43,57 @@ public class KakaoOAuthService {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RestTemplate restTemplate; // Assuming RestTemplate is configured
+    private final RestTemplate restTemplate;
 
     public String getKakaoLoginUrl() {
-        // Construct the Kakao authorization URL
         return "https://kauth.kakao.com/oauth/authorize?" +
                "client_id=" + kakaoClientId +
                "&redirect_uri=" + kakaoRedirectUri +
-               "&response_type=code";
+               "&response_type=code" +
+               "&scope=account_email";
     }
 
     @Transactional
     public TokenDto processKakaoLogin(String code) {
-        // 1. Exchange authorization code for access token
-        // This part would involve making an HTTP POST request to kakaoTokenUri
-        // with client_id, redirect_uri, code, and grant_type=authorization_code
-        // For now, just a placeholder.
+        KakaoTokenResponse tokenResponse = requestAccessToken(code);
+        KakaoUserInfo userInfo = requestUserInfo(tokenResponse.getAccessToken());
 
-        // 2. Use access token to fetch user info from kakaoUserInfoUri
-        // This part would involve making an HTTP GET request to kakaoUserInfoUri
-        // with Authorization: Bearer <access_token>
-        // For now, just a placeholder.
+        String email = userInfo.getKakaoAccount().getEmail();
+        String username = userInfo.getKakaoAccount().getProfile().getNickname();
 
-        // Extract email and other relevant info from Kakao user info
-        String email = "kakao_user@example.com"; // Placeholder
-        String username = "Kakao User"; // Placeholder
+        User user = userService.findOrCreateUser(email, username, OAuthProvider.KAKAO);
 
-        // 3. Create or retrieve user in your system
-        User user = userService.findOrCreateUser(email, username, OAuthProvider.KAKAO); // Use OAuthProvider.KAKAO
-
-        // 4. Generate application tokens
         return jwtTokenProvider.generateToken(user.getId());
+    }
+
+    private KakaoTokenResponse requestAccessToken(String code) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", kakaoClientId);
+        params.add("redirect_uri", kakaoRedirectUri);
+        params.add("code", code);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        try {
+            return restTemplate.postForObject(kakaoTokenUri, request, KakaoTokenResponse.class);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new GeneralException(ErrorStatus.KAKAO_OAUTH_ERROR, e);
+        }
+    }
+
+    private KakaoUserInfo requestUserInfo(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        try {
+            return restTemplate.exchange(kakaoUserInfoUri, HttpMethod.GET, request, KakaoUserInfo.class).getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new GeneralException(ErrorStatus.KAKAO_OAUTH_ERROR, e);
+        }
     }
 }
