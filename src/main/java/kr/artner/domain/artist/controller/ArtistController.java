@@ -1,11 +1,56 @@
 package kr.artner.domain.artist.controller;
 
-import org.springframework.web.bind.annotation.*;
+import kr.artner.domain.project.dto.ProjectResponse;
+import kr.artner.domain.artist.dto.ArtistProjectsResponse;
+import kr.artner.domain.artist.service.ArtistService;
+import kr.artner.domain.user.entity.User;
+import kr.artner.global.auth.LoginMember;
+import kr.artner.response.ApiResponse;
+import kr.artner.response.PageInfo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/artists")
+@RequiredArgsConstructor
 public class ArtistController {
+
+    private final ArtistService artistService;
+
+    @GetMapping("/me/projects")
+    public ApiResponse<ArtistProjectsResponse> getMyProjects(
+            @LoginMember User user,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            @RequestParam(value = "isOwner", defaultValue = "true") boolean isOwner
+    ) {
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<ProjectResponse.GetProjectResponse> projectPage = artistService.getMyProjects(user, isOwner, pageable);
+
+        PageInfo pageInfo = PageInfo.builder()
+                .totalCount(projectPage.getTotalElements())
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .hasMore(projectPage.hasNext())
+                .build();
+
+        ArtistProjectsResponse.ProjectsResult projectsResult = ArtistProjectsResponse.ProjectsResult.builder()
+                .projects(projectPage.getContent())
+                .build();
+
+        ArtistProjectsResponse response = ArtistProjectsResponse.builder()
+                .result(projectsResult)
+                .pageInfo(pageInfo)
+                .build();
+
+        return ApiResponse.success(response);
+    }
 
     @GetMapping
     public ResponseEntity<?> getArtists(

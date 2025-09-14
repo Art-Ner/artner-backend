@@ -4,14 +4,21 @@ import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.repository.UserRepository;
 import kr.artner.global.auth.jwt.JwtTokenProvider;
 import kr.artner.global.auth.jwt.dto.TokenResponse.TokenDto;
+import kr.artner.global.config.DotenvApplicationInitializer;
+import kr.artner.domain.user.enums.UserRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,7 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @Transactional
+@ContextConfiguration(initializers = DotenvApplicationInitializer.class)
 class LogoutIntegrationTest {
 
     @Autowired
@@ -34,11 +43,14 @@ class LogoutIntegrationTest {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    @MockBean
+    private S3Client s3Client;
+
     @Test
     @DisplayName("로그아웃을 하면 액세스 토큰이 블랙리스트에 등록되고 리프레시 토큰이 삭제된다.")
     void logout() throws Exception {
         // given
-        User user = userRepository.save(User.builder().email("test@test.com").username("test").build());
+        User user = userRepository.save(User.builder().email("test@test.com").username("test").nickname("testnickname").role(UserRole.USER).build());
         TokenDto tokenDto = jwtTokenProvider.generateToken(user.getId());
         String accessToken = tokenDto.getAccessToken();
         String refreshToken = tokenDto.getRefreshToken();

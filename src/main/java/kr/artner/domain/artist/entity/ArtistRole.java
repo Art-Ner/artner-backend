@@ -22,8 +22,7 @@ public class ArtistRole {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    @MapsId("roleCode") // Maps the roleCode from the embedded id
-    @Column(name = "role_code", nullable = false)
-    private RoleCode roleCode;
+    // @Enumerated(EnumType.STRING)
+    // @Column(name = "role_code", nullable = false)
+    // private RoleCode roleCode;
 }

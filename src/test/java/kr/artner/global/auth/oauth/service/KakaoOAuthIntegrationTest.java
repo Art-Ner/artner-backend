@@ -5,6 +5,9 @@ import kr.artner.domain.user.repository.UserRepository;
 import kr.artner.global.auth.oauth.dto.KakaoTokenResponse;
 import kr.artner.global.auth.oauth.dto.KakaoUserInfo;
 import kr.artner.global.auth.oauth.enums.OAuthProvider;
+import kr.artner.global.config.DotenvApplicationInitializer;
+import kr.artner.global.service.S3Service;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +16,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.lang.reflect.Field;
 
@@ -26,6 +33,8 @@ import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
+@ContextConfiguration(initializers = DotenvApplicationInitializer.class)
 class KakaoOAuthIntegrationTest {
 
     @Autowired
@@ -36,6 +45,12 @@ class KakaoOAuthIntegrationTest {
 
     @MockBean
     private RestTemplate restTemplate;
+
+    @MockBean
+    private S3Client s3Client;
+
+    @MockBean
+    private S3Service s3Service;
 
     @Test
     @DisplayName("카카오 로그인을 처리하고 새로운 사용자를 데이터베이스에 저장한다.")
