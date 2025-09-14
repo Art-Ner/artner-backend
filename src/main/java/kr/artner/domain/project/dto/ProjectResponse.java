@@ -1,6 +1,6 @@
 package kr.artner.domain.project.dto;
 
-import kr.artner.domain.user.dto.UserResponse;
+import kr.artner.domain.artist.dto.ArtistResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class ProjectResponse {
     @AllArgsConstructor
     public static class GetProjectResponse {
         private Long id;
-        private UserResponse.GetUserInfoResponse owner;
+        private ArtistResponse.GetArtistProfileResponse owner;
         private String title;
         private String concept;
         private String targetRegion;

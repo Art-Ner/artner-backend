@@ -1,8 +1,13 @@
 package kr.artner.domain.project.service;
 
+import kr.artner.domain.project.repository.ProjectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ProjectService {
-    // TODO: 프로젝트 관련 비즈니스 로직 구현
+
+    private final ProjectRepository projectRepository;
+
 }

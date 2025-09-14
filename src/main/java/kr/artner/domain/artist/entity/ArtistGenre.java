@@ -22,10 +22,9 @@ public class ArtistGenre {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    @MapsId("genreCode") // Maps the genreCode from the embedded id
-    @Column(name = "genre_code", nullable = false)
-    private GenreCode genreCode;
+    // @Enumerated(EnumType.STRING)
+    // @Column(name = "genre_code", nullable = false)
+    // private GenreCode genreCode;
 
     // Getters and setters (Lombok will generate them with @Getter, @Setter if added)
     // For now, I'll just add them manually for clarity if needed, or rely on Lombok.
@@ -45,11 +44,12 @@ public class ArtistGenre {
         this.user = user;
     }
 
+    @Transient
     public GenreCode getGenreCode() {
-        return genreCode;
+        return id != null ? id.getGenreCode() : null;
     }
 
-    public void setGenreCode(GenreCode genreCode) {
-        this.genreCode = genreCode;
-    }
+    // public void setGenreCode(GenreCode genreCode) {
+    //     this.genreCode = genreCode;
+    // }
 }

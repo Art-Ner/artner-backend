@@ -1,9 +1,9 @@
 package kr.artner.domain.project.entity;
 
+import kr.artner.domain.artist.entity.ArtistProfile;
 import jakarta.persistence.*;
 import kr.artner.domain.common.enums.GenreCode;
 import kr.artner.domain.project.enums.ProjectStatus;
-import kr.artner.domain.user.entity.User;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -22,7 +22,7 @@ public class Project {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    private ArtistProfile owner;
 
     @Column(length = 150, nullable = false)
     private String title;
