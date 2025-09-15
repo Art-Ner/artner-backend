@@ -1,16 +1,16 @@
 package kr.artner.domain.artist.entity;
 
 import jakarta.persistence.*;
-import kr.artner.domain.user.entity.User;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "filmography", indexes = {
-        @Index(name = "ix_filmography_user", columnList = "user_id, created_at")
+        @Index(name = "ix_filmography_artist_profile", columnList = "artist_profile_id, created_at")
 })
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -20,8 +20,8 @@ public class Filmography {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "artist_profile_id", nullable = false)
+    private ArtistProfile artistProfile;
 
     @Column(length = 150, nullable = false)
     private String title;
@@ -36,8 +36,10 @@ public class Filmography {
     private String mediaUrl;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
+    @org.hibernate.annotations.UpdateTimestamp
     private LocalDateTime updatedAt;
 }

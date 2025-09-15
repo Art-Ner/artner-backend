@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import kr.artner.global.auth.oauth.enums.OAuthProvider;
 import kr.artner.domain.common.BaseRDBEntity;
 import kr.artner.domain.user.enums.UserRole;
-import kr.artner.domain.artist.entity.ArtistGenre;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.*;
 
 @Entity
@@ -44,8 +41,6 @@ public class User extends BaseRDBEntity {
     @Column(nullable = false)
     private UserRole role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ArtistGenre> artistGenres = new ArrayList<>();
 
     @Builder
     private User(String email, String username, String phone, String profileImageUrl, OAuthProvider oauthProvider, UserRole role, String nickname) { // Added nickname to constructor

@@ -49,8 +49,7 @@ public class KakaoOAuthService {
         return "https://kauth.kakao.com/oauth/authorize?" +
                "client_id=" + kakaoClientId +
                "&redirect_uri=" + kakaoRedirectUri +
-               "&response_type=code" +
-               "&scope=account_email";
+               "&response_type=code";
     }
 
     @Transactional
@@ -58,8 +57,8 @@ public class KakaoOAuthService {
         KakaoTokenResponse tokenResponse = requestAccessToken(code);
         KakaoUserInfo userInfo = requestUserInfo(tokenResponse.getAccessToken());
 
-        String email = userInfo.getKakaoAccount().getEmail();
-        String username = userInfo.getKakaoAccount().getProfile().getNickname();
+        String email = "kakao_" + userInfo.getId() + "@temp.com"; // 임시 이메일
+        String username = "Kakao User " + userInfo.getId(); // 기본 사용자명
 
         User user = userService.findOrCreateUser(email, username, OAuthProvider.KAKAO);
 

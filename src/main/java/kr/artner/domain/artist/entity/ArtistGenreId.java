@@ -18,8 +18,8 @@ import java.io.Serializable;
 @Getter
 @EqualsAndHashCode
 public class ArtistGenreId implements Serializable {
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "artist_profile_id")
+    private Long artistProfileId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "genre_code")

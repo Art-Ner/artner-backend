@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import kr.artner.domain.artist.enums.RoleCode;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -14,10 +15,11 @@ import java.io.Serializable;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @EqualsAndHashCode
 public class ArtistRoleId implements Serializable {
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "artist_profile_id")
+    private Long artistProfileId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role_code")

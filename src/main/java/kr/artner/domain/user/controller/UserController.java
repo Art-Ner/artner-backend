@@ -56,15 +56,23 @@ public class UserController {
     }
 
     @PostMapping("/artist-profile")
-    public ApiResponse<?> createArtistProfile(@LoginMember User user) {
-        // TODO: 실제 서비스 로직 구현 필요
-        return ApiResponse.success(null);
+    public ApiResponse<kr.artner.domain.artist.dto.ArtistResponse.CreateArtistProfileResponse> createArtistProfile(
+            @LoginMember User user,
+            @RequestBody @Valid kr.artner.domain.artist.dto.ArtistRequest.CreateArtistProfile request
+    ) {
+        kr.artner.domain.artist.dto.ArtistResponse.CreateArtistProfileResponse response =
+                userService.createArtistProfile(user.getId(), request);
+        return ApiResponse.success(response);
     }
 
     @PostMapping("/venue-admin-profile")
-    public ApiResponse<?> createVenueAdminProfile(@LoginMember User user) {
-        // TODO: 실제 서비스 로직 구현 필요
-        return ApiResponse.success(null);
+    public ApiResponse<kr.artner.domain.venue.dto.VenueResponse.CreateVenueAdminProfileResponse> createVenueAdminProfile(
+            @LoginMember User user,
+            @RequestBody @Valid kr.artner.domain.venue.dto.VenueRequest.CreateVenueAdminProfile request
+    ) {
+        kr.artner.domain.venue.dto.VenueResponse.CreateVenueAdminProfileResponse response =
+                userService.createVenueAdminProfile(user.getId(), request);
+        return ApiResponse.success(response);
     }
 
     @GetMapping("/me/rented-venues")
