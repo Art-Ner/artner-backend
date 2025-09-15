@@ -59,7 +59,7 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: "{baseUrl}/api/auth/google/callback" # {baseUrl} 플레이스홀더 사용 권장
+            redirect-uri: "${baseUrl}/api/auth/google/callback"
             scope:
               - profile
               - email
@@ -68,12 +68,11 @@ spring:
             provider: kakao # 위에서 정의한 provider 이름을 사용
             client-id: ${KAKAO_CLIENT_ID}
             # client-secret: ${KAKAO_CLIENT_SECRET} # 카카오는 Client Secret이 필수 아님 (필요시 추가)
-            redirect-uri: "{baseUrl}/api/auth/kakao/callback"
+            redirect-uri: "${baseUrl}/api/auth/kakao/callback"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post # 카카오 문서에 명시된 인증 방식
             scope:
               - profile_nickname
-              - account_email
 
 
 # JWT Configuration
