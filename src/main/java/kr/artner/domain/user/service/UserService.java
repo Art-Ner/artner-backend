@@ -123,6 +123,21 @@ public class UserService {
     }
 
     @Transactional
+    public User findOrCreateUser(String email, String username, String nickname, OAuthProvider oauthProvider) {
+        return userRepository.findByOauthProviderAndEmail(oauthProvider, email)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(email)
+                            .username(username)
+                            .nickname(nickname)
+                            .oauthProvider(oauthProvider)
+                            .role(UserRole.USER)
+                            .build();
+                    return userRepository.save(newUser);
+                });
+    }
+
+    @Transactional
     public ArtistResponse.CreateArtistProfileResponse createArtistProfile(Long userId, ArtistRequest.CreateArtistProfile request) {
         User user = getUserOrThrow(userId);
 
