@@ -6,8 +6,6 @@ import kr.artner.domain.user.dto.UserResponse;
 import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.service.UserService;
 import kr.artner.global.auth.LoginMember;
-import kr.artner.global.auth.jwt.JwtTokenProvider;
-import kr.artner.global.auth.jwt.dto.TokenResponse.TokenDto;
 import kr.artner.global.service.S3Service;
 import kr.artner.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,19 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
     private final S3Service s3Service;
-
-    @GetMapping("/projects")
-    public ApiResponse<?> getMyProjects(
-            @LoginMember User user,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "limit", required = false) Integer limit,
-            @RequestParam(value = "status", required = false) String status
-    ) {
-        // TODO: 실제 서비스 로직 구현 필요
-        return ApiResponse.success(null);
-    }
 
     @GetMapping("/me")
     public ApiResponse<UserResponse.DetailInfoDTO> getMyInfo(@LoginMember User user) {
@@ -70,15 +56,23 @@ public class UserController {
     }
 
     @PostMapping("/artist-profile")
-    public ApiResponse<?> createArtistProfile(@LoginMember User user) {
-        // TODO: 실제 서비스 로직 구현 필요
-        return ApiResponse.success(null);
+    public ApiResponse<kr.artner.domain.artist.dto.ArtistResponse.CreateArtistProfileResponse> createArtistProfile(
+            @LoginMember User user,
+            @RequestBody @Valid kr.artner.domain.artist.dto.ArtistRequest.CreateArtistProfile request
+    ) {
+        kr.artner.domain.artist.dto.ArtistResponse.CreateArtistProfileResponse response =
+                userService.createArtistProfile(user.getId(), request);
+        return ApiResponse.success(response);
     }
 
     @PostMapping("/venue-admin-profile")
-    public ApiResponse<?> createVenueAdminProfile(@LoginMember User user) {
-        // TODO: 실제 서비스 로직 구현 필요
-        return ApiResponse.success(null);
+    public ApiResponse<kr.artner.domain.venue.dto.VenueResponse.CreateVenueAdminProfileResponse> createVenueAdminProfile(
+            @LoginMember User user,
+            @RequestBody @Valid kr.artner.domain.venue.dto.VenueRequest.CreateVenueAdminProfile request
+    ) {
+        kr.artner.domain.venue.dto.VenueResponse.CreateVenueAdminProfileResponse response =
+                userService.createVenueAdminProfile(user.getId(), request);
+        return ApiResponse.success(response);
     }
 
     @GetMapping("/me/rented-venues")

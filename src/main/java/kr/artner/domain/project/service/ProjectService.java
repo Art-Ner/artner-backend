@@ -79,68 +79,68 @@ public class ProjectService {
     public ProjectResponse.ProjectListResponse getProjects(
             String keyword, ProjectStatus status, GenreCode genre, String region, Long ownerId,
             Integer page, Integer size, String sort) {
-        
+
         // 기본값 설정
         page = page != null ? page : 0;
         size = size != null ? size : 20;
         sort = sort != null ? sort : "createdAt,desc";
-        
+
         // 정렬 파싱
         Pageable pageable = createPageable(page, size, sort);
-        
+
         // 프로젝트 검색
         Page<Project> projectPage = projectRepository.findProjectsWithFilters(
                 keyword, status, genre, region, ownerId, pageable);
-        
+
         // 참여자 수 계산
         List<Long> projectIds = projectPage.getContent().stream()
                 .map(Project::getId)
                 .collect(Collectors.toList());
-        
+
         Map<Long, Integer> participantCounts = getParticipantCounts(projectIds);
-        
+
         // DTO 변환
         List<ProjectResponse.ProjectSummary> summaries = projectPage.getContent().stream()
                 .map(project -> ProjectConverter.toProjectSummary(
-                        project, 
+                        project,
                         participantCounts.getOrDefault(project.getId(), 0)))
                 .collect(Collectors.toList());
-        
+
         return ProjectConverter.toProjectListResponse(projectPage, summaries);
     }
-    
+
     private Pageable createPageable(Integer page, Integer size, String sort) {
         String[] sortParts = sort.split(",");
         String field = sortParts[0];
-        Sort.Direction direction = sortParts.length > 1 && "desc".equalsIgnoreCase(sortParts[1]) 
+        Sort.Direction direction = sortParts.length > 1 && "desc".equalsIgnoreCase(sortParts[1])
                 ? Sort.Direction.DESC : Sort.Direction.ASC;
-        
+
         return PageRequest.of(page, size, Sort.by(direction, field));
     }
-    
+
     private Map<Long, Integer> getParticipantCounts(List<Long> projectIds) {
         if (projectIds.isEmpty()) {
             return new HashMap<>();
         }
-        
-        List<Object[]> results = projectMemberRepository.countMembersByProjectIds(projectIds);
+
+        // Use repository projection introduced in ProjectMemberRepository
+        List<ProjectMemberRepository.ProjectMemberCount> results =
+                projectMemberRepository.countMembersByProjectIds(projectIds);
+
         Map<Long, Integer> counts = new HashMap<>();
-        
-        for (Object[] result : results) {
-            Long projectId = (Long) result[0];
-            Long count = (Long) result[1];
-            counts.put(projectId, count.intValue());
+        for (ProjectMemberRepository.ProjectMemberCount result : results) {
+            counts.put(result.getProjectId(), result.getCnt().intValue());
         }
-        
         return counts;
     }
 
     public ProjectResponse.ProjectDetailResponse getProjectDetail(Long projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
-        
-        List<ProjectMember> members = projectMemberRepository.findByProjectIdWithArtist(projectId);
-        
+
+        // Use derived method with @EntityGraph to fetch artist
+        List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByJoinedAt(projectId);
+
         return ProjectConverter.toProjectDetailResponse(project, members);
     }
 }

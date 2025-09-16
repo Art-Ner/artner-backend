@@ -40,4 +40,10 @@ public class ArtistProfile {
     @CollectionTable(name = "artist_profile_urls", joinColumns = @JoinColumn(name = "artist_profile_id"))
     @Column(name = "url")
     private List<String> urls;
+
+    @OneToMany(mappedBy = "artistProfile", fetch = FetchType.LAZY)
+    private List<ArtistGenre> genres;
+
+    @OneToMany(mappedBy = "artistProfile", fetch = FetchType.LAZY)
+    private List<ArtistRole> roles;
 }

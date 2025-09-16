@@ -41,6 +41,7 @@ public class User extends BaseRDBEntity {
     @Column(nullable = false)
     private UserRole role;
 
+
     @Builder
     private User(String email, String username, String phone, String profileImageUrl, OAuthProvider oauthProvider, UserRole role, String nickname) { // Added nickname to constructor
         this.email = email;

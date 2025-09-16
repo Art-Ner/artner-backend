@@ -23,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -30,13 +32,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class GoogleOAuthService {
 
-    @Value("${google.oauth.client-id}")
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String GOOGLE_CLIENT_ID;
 
-    @Value("${google.oauth.client-secret}")
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String GOOGLE_CLIENT_SECRET;
 
-    @Value("${google.oauth.redirect-uri}")
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String REDIRECT_URI;
 
     private final RestTemplate restTemplate;
@@ -70,7 +72,11 @@ public class GoogleOAuthService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        return restTemplate.postForObject(tokenRequestUrl, request, GoogleTokenResponse.class);
+        try {
+            return restTemplate.postForObject(tokenRequestUrl, request, GoogleTokenResponse.class);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new GeneralException(ErrorStatus.GOOGLE_OAUTH_ERROR, e);
+        }
     }
 
 
@@ -81,14 +87,17 @@ public class GoogleOAuthService {
         headers.setBearerAuth(accessToken);
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
-        ResponseEntity<GoogleUserInfo> response = restTemplate.exchange(
-                userInfoUrl,
-                HttpMethod.GET,
-                request,
-                GoogleUserInfo.class
-        );
-
-        return response.getBody();
+        try {
+            ResponseEntity<GoogleUserInfo> response = restTemplate.exchange(
+                    userInfoUrl,
+                    HttpMethod.GET,
+                    request,
+                    GoogleUserInfo.class
+            );
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new GeneralException(ErrorStatus.GOOGLE_OAUTH_ERROR, e);
+        }
     }
 
 

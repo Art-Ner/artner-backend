@@ -2,7 +2,6 @@ package kr.artner.domain.artist.entity;
 
 import jakarta.persistence.*;
 import kr.artner.domain.artist.enums.RoleCode;
-import kr.artner.domain.user.entity.User;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "concert_history", indexes = {
-        @Index(name = "ix_credits_user", columnList = "user_id, started_on")
+        @Index(name = "ix_concert_history_artist_profile", columnList = "artist_profile_id, started_on")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,8 +21,8 @@ public class ConcertHistory {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "artist_profile_id", nullable = false)
+    private ArtistProfile artistProfile;
 
     @Column(name = "work_title", length = 200, nullable = false)
     private String workTitle;
@@ -44,8 +43,10 @@ public class ConcertHistory {
     private String proofUrl;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
+    @org.hibernate.annotations.UpdateTimestamp
     private LocalDateTime updatedAt;
 }

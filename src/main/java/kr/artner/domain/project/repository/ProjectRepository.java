@@ -1,6 +1,7 @@
 package kr.artner.domain.project.repository;
 
 import kr.artner.domain.common.enums.GenreCode;
+import kr.artner.domain.artist.entity.ArtistProfile;
 import kr.artner.domain.project.entity.Project;
 import kr.artner.domain.project.enums.ProjectStatus;
 import org.springframework.data.domain.Page;
@@ -26,4 +27,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             @Param("ownerId") Long ownerId,
             Pageable pageable
     );
+
+    Page<Project> findAllByOwner(ArtistProfile owner, Pageable pageable);
+    Page<Project> findAllByOwnerAndStatus(ArtistProfile owner, ProjectStatus status, Pageable pageable);
 }

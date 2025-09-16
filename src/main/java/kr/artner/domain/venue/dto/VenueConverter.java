@@ -4,8 +4,8 @@ import kr.artner.domain.venue.entity.Venue;
 
 public class VenueConverter {
 
-    public static VenueResponse toVenueResponse(Venue venue) {
-        return VenueResponse.builder()
+    public static VenueResponse.VenueItem toVenueItem(Venue venue) {
+        return VenueResponse.VenueItem.builder()
                 .id(venue.getId())
                 .name(venue.getName())
                 .region(venue.getRegion())

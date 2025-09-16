@@ -3,6 +3,8 @@ package kr.artner.domain.venue.entity;
 import jakarta.persistence.*;
 import kr.artner.domain.user.entity.User;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,7 +29,7 @@ public class VenueReview {
     private Venue venue;
 
     @Column(nullable = false, precision = 2, scale = 1)
-    private Double rate;
+    private BigDecimal rate;
 
     @Column(length = 500, nullable = false)
     private String content;

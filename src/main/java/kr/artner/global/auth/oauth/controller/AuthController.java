@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AuthController {
 
     private final GoogleOAuthService googleOAuthService;
-    private final KakaoOAuthService kakaoOAuthService; // Added injection
+    private final KakaoOAuthService kakaoOAuthService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/google/login")
