@@ -46,4 +46,16 @@ public class ProjectCollabRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "decided_by")
     private User decidedBy;
+
+    public void acceptRequest(User decidedBy) {
+        this.status = CollabStatus.ACCEPTED;
+        this.decidedAt = LocalDateTime.now();
+        this.decidedBy = decidedBy;
+    }
+
+    public void rejectRequest(User decidedBy) {
+        this.status = CollabStatus.REJECTED;
+        this.decidedAt = LocalDateTime.now();
+        this.decidedBy = decidedBy;
+    }
 }
