@@ -1,7 +1,7 @@
 pipeline {
   agent any
   options { timestamps() }
-  triggers { githubPush() }   // GitHub Webhook
+  triggers { githubPush() }   // GitHub Webhook으로 자동 트리거
 
   stages {
     stage('Branch check') {
@@ -13,22 +13,24 @@ pipeline {
       when { branch 'deploy' }
       steps {
         sh '''
-          set -euo pipefail
+          set -euxo pipefail
           cd /srv/artner
 
-          # 최신 이미지가 있는 경우만 가져오고(없어도 통과), app만 재기동
-          docker compose pull app || true
-          docker compose up -d app
+          echo "[1/2] app 최신 이미지 pull (없으면 무시)"
+          docker compose -f /srv/artner/docker-compose.yml pull app || true
 
-          # 상태 확인(로그에 찍기)
-          docker compose ps app || true
+          echo "[2/2] app 서비스 재기동"
+          docker compose -f /srv/artner/docker-compose.yml up -d app
+
+          echo "[완료] 현재 app 상태:"
+          docker compose -f /srv/artner/docker-compose.yml ps app || true
         '''
       }
     }
   }
 
   post {
-    success { echo '배포 완료' }
-    failure { echo '배포 실패' }
+    success { echo '배포 파이프라인 완료' }
+    failure { echo '배포 파이프라인 실패' }
   }
 }
