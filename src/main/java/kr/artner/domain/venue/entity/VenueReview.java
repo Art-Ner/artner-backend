@@ -3,6 +3,8 @@ package kr.artner.domain.venue.entity;
 import jakarta.persistence.*;
 import kr.artner.domain.user.entity.User;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,9 +36,16 @@ public class VenueReview {
     @Column(length = 500, nullable = false)
     private String content;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public void updateReview(BigDecimal rate, String content) {
+        this.rate = rate;
+        this.content = content;
+    }
 }

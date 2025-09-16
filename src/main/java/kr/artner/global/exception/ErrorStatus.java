@@ -19,7 +19,10 @@ public enum ErrorStatus {
     VENUE_ADMIN_PROFILE_ALREADY_EXISTS("VENUE_ADMIN_PROFILE_ALREADY_EXISTS", "이미 공간 사업자 프로필이 존재합니다."),
     INVALID_REQUEST("INVALID_REQUEST", "잘못된 요청입니다."),
     USER_REVIEW_ALREADY_EXISTS("USER_REVIEW_ALREADY_EXISTS", "이미 해당 사용자에 대한 리뷰를 작성하셨습니다."),
-    USER_REVIEW_NOT_FOUND("USER_REVIEW_NOT_FOUND", "해당 리뷰를 찾을 수 없습니다.");
+    USER_REVIEW_NOT_FOUND("USER_REVIEW_NOT_FOUND", "해당 리뷰를 찾을 수 없습니다."),
+    VENUE_NOT_FOUND("VENUE_NOT_FOUND", "해당 공간을 찾을 수 없습니다."),
+    VENUE_REVIEW_ALREADY_EXISTS("VENUE_REVIEW_ALREADY_EXISTS", "이미 해당 공간에 대한 리뷰를 작성하셨습니다."),
+    VENUE_REVIEW_NOT_FOUND("VENUE_REVIEW_NOT_FOUND", "해당 공간 리뷰를 찾을 수 없습니다.");
 
     private final String code;
     private final String message;

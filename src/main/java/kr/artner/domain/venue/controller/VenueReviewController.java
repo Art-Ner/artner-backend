@@ -1,37 +1,48 @@
 package kr.artner.domain.venue.controller;
 
+import jakarta.validation.Valid;
+import kr.artner.domain.user.entity.User;
+import kr.artner.domain.venue.dto.VenueReviewRequest;
+import kr.artner.domain.venue.dto.VenueReviewResponse;
+import kr.artner.domain.venue.service.VenueReviewService;
+import kr.artner.global.auth.LoginMember;
+import kr.artner.response.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/venue-reviews")
+@RequiredArgsConstructor
 public class VenueReviewController {
 
+    private final VenueReviewService venueReviewService;
+
     @PostMapping("/{venueId}")
-    public ResponseEntity<?> createVenueReview(@PathVariable Long venueId) {
-        // TODO: 유저의 공간 리뷰 등록
-        return ResponseEntity.ok().build();
+    public ApiResponse<VenueReviewResponse.CreateVenueReviewResponse> createVenueReview(
+            @LoginMember User user,
+            @PathVariable Long venueId,
+            @Valid @RequestBody VenueReviewRequest.CreateVenueReview request
+    ) {
+        VenueReviewResponse.CreateVenueReviewResponse response = venueReviewService.createVenueReview(user, venueId, request);
+        return ApiResponse.success(response);
     }
 
-    @PutMapping("/{venueId}")
-    public ResponseEntity<?> updateVenueReview(@PathVariable Long venueId) {
-        // TODO: 유저의 공간 리뷰 수정
-        return ResponseEntity.ok().build();
+    @PatchMapping("/{venueId}")
+    public ApiResponse<VenueReviewResponse.UpdateVenueReviewResponse> updateVenueReview(
+            @LoginMember User user,
+            @PathVariable Long venueId,
+            @Valid @RequestBody VenueReviewRequest.UpdateVenueReview request
+    ) {
+        VenueReviewResponse.UpdateVenueReviewResponse response = venueReviewService.updateVenueReview(user, venueId, request);
+        return ApiResponse.success(response);
     }
 
     @DeleteMapping("/{venueId}")
-    public ResponseEntity<?> deleteVenueReview(@PathVariable Long venueId) {
-        // TODO: 유저의 공간 리뷰 삭제
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/venues/{venueId}/reviews") // This URL is different from the base mapping
-    public ResponseEntity<?> getVenueReviews(
-            @PathVariable Long venueId,
-            @RequestParam(value = "limit", required = false) Integer limit,
-            @RequestParam(value = "offset", required = false) Integer offset
+    public ApiResponse<Void> deleteVenueReview(
+            @LoginMember User user,
+            @PathVariable Long venueId
     ) {
-        // TODO: 공간의 리뷰 목록 조회
-        return ResponseEntity.ok().build();
+        venueReviewService.deleteVenueReview(user, venueId);
+        return ApiResponse.success(null);
     }
 }
