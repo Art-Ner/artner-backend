@@ -47,16 +47,32 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        var configuration = new org.springframework.web.cors.CorsConfiguration();
-        for (String origin : corsProperties.getAllowedOrigins()) {
-            configuration.addAllowedOrigin(origin);
-        }
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
-
         var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+
+        // WebSocket 엔드포인트용 CORS 설정 (credentials 허용)
+        var wsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+        wsConfiguration.addAllowedOriginPattern("*");
+        wsConfiguration.addAllowedMethod("*");
+        wsConfiguration.addAllowedHeader("*");
+        wsConfiguration.setAllowCredentials(true);
+        source.registerCorsConfiguration("/ws/**", wsConfiguration);
+
+        // 일반 API용 CORS 설정
+        var apiConfiguration = new org.springframework.web.cors.CorsConfiguration();
+        for (String origin : corsProperties.getAllowedOrigins()) {
+            if ("null".equals(origin)) {
+                apiConfiguration.addAllowedOriginPattern("*");
+            } else {
+                apiConfiguration.addAllowedOrigin(origin);
+            }
+        }
+        apiConfiguration.addAllowedMethod("*");
+        apiConfiguration.addAllowedHeader("*");
+
+        boolean hasNullOrigin = corsProperties.getAllowedOrigins().contains("null");
+        apiConfiguration.setAllowCredentials(!hasNullOrigin);
+        source.registerCorsConfiguration("/**", apiConfiguration);
+
         return source;
     }
 
