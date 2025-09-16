@@ -1,5 +1,6 @@
 package kr.artner.domain.userreview.service;
 
+import kr.artner.domain.user.dto.UserConverter;
 import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.repository.UserRepository;
 import kr.artner.domain.userreview.dto.UserReviewRequest;
@@ -8,10 +9,15 @@ import kr.artner.domain.userreview.entity.UserReview;
 import kr.artner.domain.userreview.repository.UserReviewRepository;
 import kr.artner.global.exception.ErrorStatus;
 import kr.artner.global.exception.GeneralException;
+import kr.artner.response.PageInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -89,4 +95,37 @@ public class UserReviewService {
         // 리뷰 삭제
         userReviewRepository.delete(userReview);
     }
+
+    @Transactional(readOnly = true)
+    public UserReviewResponse.GetUserReviewsResponse getUserReviews(Long targetUserId, int page, int size) {
+        // 대상 사용자 조회
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserReview> reviewPage = userReviewRepository.findByTargetUserOrderByCreatedAtDesc(targetUser, pageable);
+
+        List<UserReviewResponse.UserReviewItem> reviewItems = reviewPage.getContent().stream()
+                .map(review -> UserReviewResponse.UserReviewItem.builder()
+                        .id(review.getId())
+                        .reviewer(UserConverter.toGetUserInfoResponse(review.getUser()))
+                        .content(review.getContent())
+                        .createdAt(review.getCreatedAt())
+                        .updatedAt(review.getUpdatedAt())
+                        .build())
+                .toList();
+
+        PageInfo pageInfo = PageInfo.builder()
+                .totalCount(reviewPage.getTotalElements())
+                .limit(size)
+                .offset(page * size)
+                .hasMore(reviewPage.hasNext())
+                .build();
+
+        return UserReviewResponse.GetUserReviewsResponse.builder()
+                .reviews(reviewItems)
+                .pageInfo(pageInfo)
+                .build();
+    }
+
 }

@@ -9,11 +9,17 @@ import kr.artner.domain.venue.repository.VenueRepository;
 import kr.artner.domain.venue.repository.VenueReviewRepository;
 import kr.artner.global.exception.ErrorStatus;
 import kr.artner.global.exception.GeneralException;
+import kr.artner.response.PageInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -94,6 +100,47 @@ public class VenueReviewService {
 
         // 리뷰 삭제
         venueReviewRepository.delete(venueReview);
+    }
+
+    @Transactional(readOnly = true)
+    public VenueReviewResponse.GetVenueReviewsResponse getVenueReviews(Long venueId, int page, int size) {
+        // 대상 공간 조회
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.VENUE_NOT_FOUND));
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<VenueReview> reviewPage = venueReviewRepository.findByVenueOrderByCreatedAtDesc(venue, pageable);
+
+        List<VenueReviewResponse.VenueReviewItem> reviewItems = reviewPage.getContent().stream()
+                .map(review -> VenueReviewResponse.VenueReviewItem.builder()
+                        .id(review.getId())
+                        .reviewer(kr.artner.domain.user.dto.UserConverter.toGetUserInfoResponse(review.getUser()))
+                        .rate(review.getRate())
+                        .content(review.getContent())
+                        .createdAt(review.getCreatedAt())
+                        .updatedAt(review.getUpdatedAt())
+                        .build())
+                .toList();
+
+        // 평균 평점 계산
+        BigDecimal averageRating = reviewPage.getContent().stream()
+                .map(VenueReview::getRate)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(BigDecimal.valueOf(Math.max(reviewPage.getContent().size(), 1)), 1, RoundingMode.HALF_UP);
+
+        PageInfo pageInfo = PageInfo.builder()
+                .totalCount(reviewPage.getTotalElements())
+                .limit(size)
+                .offset(page * size)
+                .hasMore(reviewPage.hasNext())
+                .build();
+
+        return VenueReviewResponse.GetVenueReviewsResponse.builder()
+                .reviews(reviewItems)
+                .pageInfo(pageInfo)
+                .averageRating(averageRating)
+                .totalReviews(reviewPage.getTotalElements())
+                .build();
     }
 
     private void validateRating(BigDecimal rate) {
