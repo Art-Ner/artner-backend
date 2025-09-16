@@ -21,4 +21,26 @@ public class UserReviewResponse {
         private String content;
         private LocalDateTime createdAt;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateUserReviewResponse {
+        private Long id;
+        private String content;
+        private LocalDateTime createdAt;
+        private String message;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateUserReviewResponse {
+        private Long id;
+        private String content;
+        private LocalDateTime updatedAt;
+        private String message;
+    }
 }
