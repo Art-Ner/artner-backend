@@ -32,4 +32,56 @@ public class ChattingResponse {
         private String body;
         private LocalDateTime createdAt;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateConversationResponse {
+        private Long id;
+        private UserResponse.GetUserInfoResponse otherUser;
+        private String message;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SendMessageResponse {
+        private Long id;
+        private Long conversationId;
+        private UserResponse.GetUserInfoResponse sender;
+        private String body;
+        private LocalDateTime createdAt;
+        private String message;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetConversationsResponse {
+        private java.util.List<ConversationItem> conversations;
+        private kr.artner.response.PageInfo pageInfo;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ConversationItem {
+        private Long id;
+        private UserResponse.GetUserInfoResponse otherUser;
+        private GetMessageResponse lastMessage;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetMessagesResponse {
+        private java.util.List<GetMessageResponse> messages;
+        private kr.artner.response.PageInfo pageInfo;
+    }
 }

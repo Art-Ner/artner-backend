@@ -17,6 +17,7 @@ public class CorsProperties {
     private List<String> allowedOrigins = List.of(
             "http://localhost:3000",
             "http://localhost:8080",
-            "https://artner.kr"
+            "https://artner.kr",
+            "null"
     ); // <-- 여기에 기본값을 지정!
 }

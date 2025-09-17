@@ -49,7 +49,8 @@ public class KakaoOAuthService {
         return "https://kauth.kakao.com/oauth/authorize?" +
                "client_id=" + kakaoClientId +
                "&redirect_uri=" + kakaoRedirectUri +
-               "&response_type=code";
+               "&response_type=code" +
+               "&scope=profile_nickname,account_email";
     }
 
     @Transactional
@@ -57,12 +58,41 @@ public class KakaoOAuthService {
         KakaoTokenResponse tokenResponse = requestAccessToken(code);
         KakaoUserInfo userInfo = requestUserInfo(tokenResponse.getAccessToken());
 
-        String email = "kakao_" + userInfo.getId() + "@temp.com"; // 임시 이메일
-        String username = "Kakao User " + userInfo.getId(); // 기본 사용자명
+        // 실제 이메일 사용, 없으면 임시 이메일
+        String email = userInfo.getKakaoAccount() != null && userInfo.getKakaoAccount().getEmail() != null
+                ? userInfo.getKakaoAccount().getEmail()
+                : "kakao_" + userInfo.getId() + "@temp.com";
 
-        User user = userService.findOrCreateUser(email, username, OAuthProvider.KAKAO);
+        // 실제 이름 사용, 없으면 기본값
+        String username = getUsernameFromKakaoInfo(userInfo);
+
+        // 카카오톡 닉네임 사용, 없으면 username과 동일하게
+        String nickname = getNicknameFromKakaoInfo(userInfo, username);
+
+        User user = userService.findOrCreateUser(email, username, nickname, OAuthProvider.KAKAO);
 
         return jwtTokenProvider.generateToken(user.getId());
+    }
+
+    private String getUsernameFromKakaoInfo(KakaoUserInfo userInfo) {
+        if (userInfo.getKakaoAccount() != null &&
+            userInfo.getKakaoAccount().getProfile() != null &&
+            userInfo.getKakaoAccount().getProfile().getNickname() != null) {
+            // 닉네임을 username으로 사용
+            return userInfo.getKakaoAccount().getProfile().getNickname();
+        }
+        // 기본값 (닉네임이 없으면)
+        return "Kakao User " + userInfo.getId();
+    }
+
+    private String getNicknameFromKakaoInfo(KakaoUserInfo userInfo, String fallback) {
+        if (userInfo.getKakaoAccount() != null &&
+            userInfo.getKakaoAccount().getProfile() != null &&
+            userInfo.getKakaoAccount().getProfile().getNickname() != null) {
+            return userInfo.getKakaoAccount().getProfile().getNickname();
+        }
+        // 닉네임이 없으면 username과 동일하게
+        return fallback;
     }
 
     private KakaoTokenResponse requestAccessToken(String code) {

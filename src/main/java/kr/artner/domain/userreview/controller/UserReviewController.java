@@ -1,27 +1,48 @@
 package kr.artner.domain.userreview.controller;
 
+import jakarta.validation.Valid;
+import kr.artner.domain.user.entity.User;
+import kr.artner.domain.userreview.dto.UserReviewRequest;
+import kr.artner.domain.userreview.dto.UserReviewResponse;
+import kr.artner.domain.userreview.service.UserReviewService;
+import kr.artner.global.auth.LoginMember;
+import kr.artner.response.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/user-reviews")
+@RequiredArgsConstructor
 public class UserReviewController {
 
+    private final UserReviewService userReviewService;
+
     @PostMapping("/{userId}")
-    public ResponseEntity<?> createUserReview(@PathVariable Long userId) {
-        // TODO: 유저간 리뷰 등록
-        return ResponseEntity.ok().build();
+    public ApiResponse<UserReviewResponse.CreateUserReviewResponse> createUserReview(
+            @LoginMember User user,
+            @PathVariable Long userId,
+            @Valid @RequestBody UserReviewRequest.CreateUserReview request
+    ) {
+        UserReviewResponse.CreateUserReviewResponse response = userReviewService.createUserReview(user, userId, request);
+        return ApiResponse.success(response);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<?> updateUserReview(@PathVariable Long userId) {
-        // TODO: 유저간 리뷰 수정
-        return ResponseEntity.ok().build();
+    public ApiResponse<UserReviewResponse.UpdateUserReviewResponse> updateUserReview(
+            @LoginMember User user,
+            @PathVariable Long userId,
+            @Valid @RequestBody UserReviewRequest.UpdateUserReview request
+    ) {
+        UserReviewResponse.UpdateUserReviewResponse response = userReviewService.updateUserReview(user, userId, request);
+        return ApiResponse.success(response);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUserReview(@PathVariable Long userId) {
-        // TODO: 유저간 리뷰 삭제
-        return ResponseEntity.ok().build();
+    public ApiResponse<Void> deleteUserReview(
+            @LoginMember User user,
+            @PathVariable Long userId
+    ) {
+        userReviewService.deleteUserReview(user, userId);
+        return ApiResponse.success(null);
     }
 }
