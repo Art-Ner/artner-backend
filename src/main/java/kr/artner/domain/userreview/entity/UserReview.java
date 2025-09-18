@@ -3,6 +3,8 @@ package kr.artner.domain.userreview.entity;
 import jakarta.persistence.*;
 import kr.artner.domain.user.entity.User;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,9 +31,15 @@ public class UserReview {
     @Column(length = 500, nullable = false)
     private String content;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

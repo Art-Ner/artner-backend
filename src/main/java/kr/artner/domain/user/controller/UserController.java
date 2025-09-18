@@ -5,6 +5,8 @@ import kr.artner.domain.user.dto.UserRequest;
 import kr.artner.domain.user.dto.UserResponse;
 import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.service.UserService;
+import kr.artner.domain.userreview.dto.UserReviewResponse;
+import kr.artner.domain.userreview.service.UserReviewService;
 import kr.artner.global.auth.LoginMember;
 import kr.artner.global.service.S3Service;
 import kr.artner.response.ApiResponse;
@@ -21,6 +23,7 @@ public class UserController {
 
     private final UserService userService;
     private final S3Service s3Service;
+    private final UserReviewService userReviewService;
 
     @GetMapping("/me")
     public ApiResponse<UserResponse.DetailInfoDTO> getMyInfo(@LoginMember User user) {
@@ -79,5 +82,15 @@ public class UserController {
     public ApiResponse<?> getRentedVenues(@LoginMember User user) {
         // TODO: 내가 대관한 공간 목록 조회
         return ApiResponse.success(null);
+    }
+
+    @GetMapping("/{userId}/reviews")
+    public ApiResponse<UserReviewResponse.GetUserReviewsResponse> getUserReviews(
+            @PathVariable Long userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        UserReviewResponse.GetUserReviewsResponse response = userReviewService.getUserReviews(userId, page, size);
+        return ApiResponse.success(response);
     }
 }

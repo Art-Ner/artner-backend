@@ -9,8 +9,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ArtistProfileRepository extends JpaRepository<ArtistProfile, Long> {
+
+    Optional<ArtistProfile> findByUserId(Long userId);
+
     Optional<ArtistProfile> findByUser(User user);
 
     Page<ArtistProfile> findByArtistNameContainingIgnoreCaseOrHeadlineContainingIgnoreCase(
-        String artistName, String headline, Pageable pageable);
+        String artistName, String headline, Pageable pageable
+    );
 }
