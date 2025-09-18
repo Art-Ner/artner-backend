@@ -1,5 +1,7 @@
 package kr.artner.global.exception;
 
+import org.springframework.http.HttpStatus;
+
 public enum ErrorStatus {
     INVALID_REFRESHTOKEN("INVALID_REFRESHTOKEN", "유효하지 않은 리프레시 토큰입니다"),
     INVALID_ACCESSTOKEN("INVALID_ACCESSTOKEN", "유효하지 않은 토큰입니다"),
@@ -11,6 +13,9 @@ public enum ErrorStatus {
     MEMBER_NOT_EXIST("MEMBER_NOT_EXIST", "존재하지 않는 회원입니다"),
     GOOGLE_OAUTH_ERROR("GOOGLE_OAUTH_ERROR", "구글 로그인 중 오류가 발생했습니다."),
     KAKAO_OAUTH_ERROR("KAKAO_OAUTH_ERROR", "카카오 로그인 중 오류가 발생했습니다."),
+    INVALID_OAUTH_CODE("INVALID_OAUTH_CODE", "잘못된 인증 코드입니다."),
+    OAUTH_TOKEN_REQUEST_FAILED("OAUTH_TOKEN_REQUEST_FAILED", "인증 토큰 요청에 실패했습니다."),
+    OAUTH_USER_INFO_REQUEST_FAILED("OAUTH_USER_INFO_REQUEST_FAILED", "사용자 정보 요청에 실패했습니다."),
     ARTIST_PROFILE_NOT_FOUND("ARTIST_PROFILE_NOT_FOUND", "아티스트 프로필을 찾을 수 없습니다."),
     ARTIST_PROFILE_ALREADY_EXISTS("ARTIST_PROFILE_ALREADY_EXISTS", "이미 아티스트 프로필이 존재합니다."),
     FILMOGRAPHY_NOT_FOUND("FILMOGRAPHY_NOT_FOUND", "필모그래피를 찾을 수 없습니다."),
@@ -41,5 +46,58 @@ public enum ErrorStatus {
 
     public String getMessage() {
         return message;
+    }
+
+    public HttpStatus getHttpStatus() {
+        switch (this) {
+            // 400 Bad Request - 잘못된 요청 파라미터
+            case INVALID_REQUEST:
+            case INVALID_OAUTH_CODE:
+                return HttpStatus.BAD_REQUEST;
+
+            // 401 Unauthorized - 인증 실패
+            case INVALID_REFRESHTOKEN:
+            case INVALID_ACCESSTOKEN:
+            case UNAUTHORIZED:
+            case GOOGLE_OAUTH_ERROR:
+            case KAKAO_OAUTH_ERROR:
+            case OAUTH_TOKEN_REQUEST_FAILED:
+            case OAUTH_USER_INFO_REQUEST_FAILED:
+            case MEMBER_NOT_REGISTERED_BY_GOOGLE:
+                return HttpStatus.UNAUTHORIZED;
+
+            // 404 Not Found
+            case USER_NOT_FOUND:
+            case ARTIST_PROFILE_NOT_FOUND:
+            case FILMOGRAPHY_NOT_FOUND:
+            case CONCERT_HISTORY_NOT_FOUND:
+            case VENUE_ADMIN_PROFILE_NOT_FOUND:
+            case USER_REVIEW_NOT_FOUND:
+            case VENUE_NOT_FOUND:
+            case VENUE_REVIEW_NOT_FOUND:
+            case CONVERSATION_NOT_FOUND:
+                return HttpStatus.NOT_FOUND;
+
+            // 409 Conflict - 중복 데이터
+            case MEMBER_DUPLICATE_BY_EMAIL:
+            case MEMBER_DUPLICATE_BY_USERNAME:
+            case ARTIST_PROFILE_ALREADY_EXISTS:
+            case VENUE_ADMIN_PROFILE_ALREADY_EXISTS:
+            case USER_REVIEW_ALREADY_EXISTS:
+            case VENUE_REVIEW_ALREADY_EXISTS:
+                return HttpStatus.CONFLICT;
+
+            // 403 Forbidden - 접근 권한 없음
+            case ACCESS_DENIED:
+                return HttpStatus.FORBIDDEN;
+
+            // 500 Internal Server Error
+            case INTERNAL_SERVER_ERROR:
+                return HttpStatus.INTERNAL_SERVER_ERROR;
+
+            // 기타는 400으로 처리
+            default:
+                return HttpStatus.BAD_REQUEST;
+        }
     }
 }
