@@ -68,6 +68,9 @@ public class Booking {
         if (this.status == BookingStatus.CANCELLED) {
             throw new IllegalStateException("이미 취소된 요청입니다.");
         }
+        if (this.status != BookingStatus.REQUESTED) {
+            throw new IllegalStateException("REQUESTED 상태에서만 취소할 수 있습니다.");
+        }
         this.status = BookingStatus.CANCELLED;
         this.decidedAt = LocalDateTime.now();
     }

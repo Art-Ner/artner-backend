@@ -10,6 +10,7 @@ import kr.artner.domain.venue.dto.VenueReviewResponse;
 import kr.artner.domain.venue.service.VenueAvailabilityService;
 import kr.artner.domain.venue.service.VenueReviewService;
 import kr.artner.domain.venue.service.VenueService;
+import kr.artner.global.auth.CustomUserDetails;
 import kr.artner.global.auth.LoginMember;
 import kr.artner.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,10 @@ public class VenueController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Map<String, Object>> createVenue(
-            @LoginMember User user,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid VenueRequest.CreateVenueRequest request
     ) {
+        User user = userDetails.getUser();
         VenueResponse.CreateVenueResponse response = venueService.createVenue(request, user.getId());
 
         return ApiResponse.success(
@@ -44,9 +46,10 @@ public class VenueController {
     @PatchMapping("/{venueId}")
     public ApiResponse<Map<String, Object>> updateVenue(
             @PathVariable Long venueId,
-            @LoginMember User user,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid VenueRequest.UpdateVenueRequest request
     ) {
+        User user = userDetails.getUser();
         VenueResponse.UpdateVenueResponse response = venueService.updateVenue(venueId, request, user.getId());
 
         return ApiResponse.success(
@@ -58,8 +61,9 @@ public class VenueController {
     @DeleteMapping("/{venueId}")
     public ApiResponse<Void> deleteVenue(
             @PathVariable Long venueId,
-            @LoginMember User user
+            @LoginMember CustomUserDetails userDetails
     ) {
+        User user = userDetails.getUser();
         venueService.deleteVenue(venueId, user.getId());
 
         return ApiResponse.success("공연장이 삭제되었습니다.", null);
@@ -103,9 +107,10 @@ public class VenueController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Map<String, Object>> addVenueAvailability(
             @PathVariable Long venueId,
-            @LoginMember User user,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid VenueAvailabilityRequest.CreateAvailabilityRequest request
     ) {
+        User user = userDetails.getUser();
         VenueAvailabilityResponse.CreateAvailabilityResponse response =
                 venueAvailabilityService.addUnavailableSlot(venueId, request, user.getId());
 
@@ -119,9 +124,10 @@ public class VenueController {
     public ApiResponse<Map<String, Object>> updateVenueAvailability(
             @PathVariable Long venueId,
             @PathVariable Long availabilityId,
-            @LoginMember User user,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid VenueAvailabilityRequest.UpdateAvailabilityRequest request
     ) {
+        User user = userDetails.getUser();
         VenueAvailabilityResponse.UpdateAvailabilityResponse response =
                 venueAvailabilityService.updateAvailabilitySlot(venueId, availabilityId, request, user.getId());
 
@@ -136,8 +142,9 @@ public class VenueController {
     public ApiResponse<Void> deleteVenueAvailability(
             @PathVariable Long venueId,
             @PathVariable Long availabilityId,
-            @LoginMember User user
+            @LoginMember CustomUserDetails userDetails
     ) {
+        User user = userDetails.getUser();
         venueAvailabilityService.deleteAvailabilitySlot(venueId, availabilityId, user.getId());
 
         return ApiResponse.success("대관 불가 일정이 삭제되었습니다.", null);

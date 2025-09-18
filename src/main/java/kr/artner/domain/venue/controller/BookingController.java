@@ -5,6 +5,7 @@ import kr.artner.domain.user.entity.User;
 import kr.artner.domain.venue.dto.BookingRequest;
 import kr.artner.domain.venue.dto.BookingResponse;
 import kr.artner.domain.venue.service.BookingService;
+import kr.artner.global.auth.CustomUserDetails;
 import kr.artner.global.auth.LoginMember;
 import kr.artner.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,10 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Map<String, Object>> createBooking(
-            @LoginMember User user,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid BookingRequest.CreateBookingRequest request
     ) {
-        BookingResponse.CreateBookingResponse response = bookingService.createBooking(request, user.getId());
+        BookingResponse.CreateBookingResponse response = bookingService.createBooking(request, userDetails.getUser().getId());
         
         return ApiResponse.success(
                 "대관 요청이 접수되었습니다.",
@@ -60,9 +61,9 @@ public class BookingController {
     @PatchMapping("/{bookingId}/approve")
     public ApiResponse<Map<String, Object>> approveBooking(
             @PathVariable Long bookingId,
-            @LoginMember User user
+            @LoginMember CustomUserDetails userDetails
     ) {
-        BookingResponse.BookingApprovalResponse response = bookingService.approveBooking(bookingId, user.getId());
+        BookingResponse.BookingApprovalResponse response = bookingService.approveBooking(bookingId, userDetails.getUser().getId());
         
         return ApiResponse.success(
                 "대관 요청이 승인되었습니다.",
@@ -73,9 +74,9 @@ public class BookingController {
     @PatchMapping("/{bookingId}/reject")
     public ApiResponse<Map<String, Object>> rejectBooking(
             @PathVariable Long bookingId,
-            @LoginMember User user
+            @LoginMember CustomUserDetails userDetails
     ) {
-        BookingResponse.BookingRejectionResponse response = bookingService.rejectBooking(bookingId, user.getId());
+        BookingResponse.BookingRejectionResponse response = bookingService.rejectBooking(bookingId, userDetails.getUser().getId());
         
         return ApiResponse.success(
                 "대관 요청이 거절되었습니다.",
@@ -86,9 +87,9 @@ public class BookingController {
     @PatchMapping("/{bookingId}/cancel")
     public ApiResponse<Map<String, Object>> cancelBooking(
             @PathVariable Long bookingId,
-            @LoginMember User user
+            @LoginMember CustomUserDetails userDetails
     ) {
-        BookingResponse.BookingCancellationResponse response = bookingService.cancelBooking(bookingId, user.getId());
+        BookingResponse.BookingCancellationResponse response = bookingService.cancelBooking(bookingId, userDetails.getUser().getId());
         
         return ApiResponse.success(
                 "대관이 취소되었습니다.",
