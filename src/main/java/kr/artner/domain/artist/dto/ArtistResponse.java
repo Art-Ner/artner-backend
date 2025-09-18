@@ -58,6 +58,14 @@ public class ArtistResponse {
     @AllArgsConstructor
     public static class ArtistListResponse {
         private List<ArtistListItem> artists;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ArtistListWithPageResponse {
+        private ArtistListResponse result;
         private kr.artner.response.PageInfo pageInfo;
     }
 }
