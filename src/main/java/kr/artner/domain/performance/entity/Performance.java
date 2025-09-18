@@ -4,18 +4,14 @@ import jakarta.persistence.*;
 import kr.artner.domain.common.enums.GenreCode;
 import kr.artner.domain.performance.enums.PerformanceStatus;
 import kr.artner.domain.project.entity.Project;
+import kr.artner.domain.artist.entity.ArtistProfile;
 import kr.artner.domain.venue.entity.Venue;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "performances", indexes = {
-        @Index(name = "ix_performances_time", columnList = "start_dt, end_dt"),
-        @Index(name = "ix_performances_project", columnList = "project_id"),
-        @Index(name = "ix_performances_venue", columnList = "venue_id"),
-        @Index(name = "ix_perf_published_start", columnList = "start_dt")
-})
+@Table(name = "performances")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -25,6 +21,10 @@ public class Performance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private ArtistProfile owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
@@ -57,7 +57,7 @@ public class Performance {
     private LocalDateTime endDt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     @Builder.Default
     private PerformanceStatus status = PerformanceStatus.DRAFT;
 

@@ -36,7 +36,7 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
         SELECT p FROM Performance p 
         LEFT JOIN p.venue v 
         WHERE 
-            (:keyword IS NULL OR p.title LIKE %:keyword% OR p.description LIKE %:keyword%) 
+            (:keyword IS NULL OR p.title LIKE CONCAT('%', :keyword, '%') OR p.description LIKE CONCAT('%', :keyword, '%')) 
             AND (:genreCode IS NULL OR p.genreCode = :genreCode)
             AND (:region IS NULL OR v.region = :region)
             AND (:projectId IS NULL OR p.project.id = :projectId)
@@ -47,7 +47,7 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
         """)
     Page<Performance> findPerformancesWithFilters(
             @Param("keyword") String keyword,
-            @Param("genreCode") kr.artner.domain.venue.enums.GenreCode genreCode,
+            @Param("genreCode") kr.artner.domain.common.enums.GenreCode genreCode,
             @Param("region") String region,
             @Param("projectId") Long projectId,
             @Param("venueId") Long venueId,

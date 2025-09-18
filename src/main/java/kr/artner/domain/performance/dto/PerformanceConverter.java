@@ -1,5 +1,6 @@
 package kr.artner.domain.performance.dto;
 
+import kr.artner.domain.artist.entity.ArtistProfile;
 import kr.artner.domain.performance.entity.Performance;
 import kr.artner.domain.project.entity.Project;
 import kr.artner.domain.venue.entity.Venue;
@@ -8,8 +9,9 @@ import java.time.LocalDateTime;
 
 public class PerformanceConverter {
 
-    public static Performance toEntity(PerformanceRequest.CreatePerformanceRequest request, Project project, Venue venue) {
+    public static Performance toEntity(PerformanceRequest.CreatePerformanceRequest request, Project project, Venue venue, ArtistProfile owner) {
         return Performance.builder()
+                .owner(owner)
                 .project(project)
                 .venue(venue)
                 .title(request.getTitle())

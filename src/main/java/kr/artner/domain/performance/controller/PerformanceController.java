@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import kr.artner.domain.performance.dto.PerformanceRequest;
 import kr.artner.domain.performance.dto.PerformanceResponse;
 import kr.artner.domain.performance.service.PerformanceService;
+import kr.artner.domain.user.entity.User;
+import kr.artner.global.auth.CustomUserDetails;
+import kr.artner.global.auth.LoginMember;
 import kr.artner.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,9 +27,11 @@ public class PerformanceController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Map<String, Object>> createPerformance(
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid PerformanceRequest.CreatePerformanceRequest request
     ) {
-        PerformanceResponse.CreatePerformanceResponse response = performanceService.createPerformance(request);
+        User user = userDetails.getUser();
+        PerformanceResponse.CreatePerformanceResponse response = performanceService.createPerformance(request, user.getId());
         
         return ApiResponse.success(
                 "공연이 생성되었습니다.",
@@ -72,15 +77,23 @@ public class PerformanceController {
     }
 
     @DeleteMapping("/{performanceId}")
-    public ApiResponse<Void> deletePerformance(@PathVariable Long performanceId) {
-        performanceService.deletePerformance(performanceId);
+    public ApiResponse<Void> deletePerformance(
+            @PathVariable Long performanceId,
+            @LoginMember CustomUserDetails userDetails
+    ) {
+        User user = userDetails.getUser();
+        performanceService.deletePerformance(performanceId, user.getId());
         
-        return ApiResponse.success("공연이 삭제되었습니다.");
+        return ApiResponse.success("공연이 삭제되었습니다.", null);
     }
 
     @PatchMapping("/{performanceId}/publish")
-    public ApiResponse<Map<String, Object>> publishPerformance(@PathVariable Long performanceId) {
-        PerformanceResponse.PublishPerformanceResponse response = performanceService.publishPerformance(performanceId);
+    public ApiResponse<Map<String, Object>> publishPerformance(
+            @PathVariable Long performanceId,
+            @LoginMember CustomUserDetails userDetails
+    ) {
+        User user = userDetails.getUser();
+        PerformanceResponse.PublishPerformanceResponse response = performanceService.publishPerformance(performanceId, user.getId());
         
         return ApiResponse.success(
                 "공연이 게시되었습니다.",
@@ -91,9 +104,11 @@ public class PerformanceController {
     @PatchMapping("/{performanceId}")
     public ApiResponse<Map<String, Object>> updatePerformance(
             @PathVariable Long performanceId,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid PerformanceRequest.UpdatePerformanceRequest request
     ) {
-        PerformanceResponse.UpdatePerformanceResponse response = performanceService.updatePerformance(performanceId, request);
+        User user = userDetails.getUser();
+        PerformanceResponse.UpdatePerformanceResponse response = performanceService.updatePerformance(performanceId, request, user.getId());
         
         return ApiResponse.success(
                 "공연이 수정되었습니다.",
