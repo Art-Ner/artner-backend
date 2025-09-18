@@ -38,6 +38,6 @@ public class Ticket {
     @Column(name = "purchased_at", nullable = false, updatable = false)
     private LocalDateTime purchasedAt;
 
-    @Column(name = "cancelled_at", nullable = false)
+    @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
 }
