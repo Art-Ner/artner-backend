@@ -5,13 +5,12 @@ import kr.artner.domain.project.entity.Project;
 import kr.artner.domain.project.entity.ProjectCollabRequest;
 import kr.artner.domain.project.entity.ProjectMember;
 import kr.artner.domain.project.enums.CollabStatus;
-import kr.artner.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 
 public class ProjectCollabRequestConverter {
 
-    public static ProjectCollabRequest toEntity(ProjectCollabRequestRequest.CreateRequest request, Project project, User requester) {
+    public static ProjectCollabRequest toEntity(ProjectCollabRequestRequest.CreateRequest request, Project project, ArtistProfile requester) {
         return ProjectCollabRequest.builder()
                 .project(project)
                 .requester(requester)

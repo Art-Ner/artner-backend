@@ -1,11 +1,11 @@
 package kr.artner.domain.project.dto;
 
 import kr.artner.domain.artist.dto.ArtistConverter;
+import kr.artner.domain.artist.entity.ArtistProfile;
 import kr.artner.domain.project.entity.Project;
 import kr.artner.domain.project.entity.ProjectMember;
 import kr.artner.domain.project.enums.ProjectStatus;
 import kr.artner.domain.user.dto.UserConverter;
-import kr.artner.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class ProjectConverter {
 
-    public static Project toEntity(ProjectRequest.CreateProjectRequest request, User owner) {
+    public static Project toEntity(ProjectRequest.CreateProjectRequest request, ArtistProfile owner) {
         return Project.builder()
                 .owner(owner)
                 .title(request.getTitle())
@@ -69,7 +69,7 @@ public class ProjectConverter {
                 .createdAt(project.getCreatedAt())
                 .owner(ProjectResponse.ProjectSummary.OwnerSummary.builder()
                         .id(project.getOwner().getId())
-                        .username(project.getOwner().getUsername())
+                        .username(project.getOwner().getArtistName())
                         .build())
                 .build();
     }

@@ -10,6 +10,7 @@ import kr.artner.domain.project.enums.ProjectStatus;
 import kr.artner.domain.project.service.ProjectCollabRequestService;
 import kr.artner.domain.project.service.ProjectService;
 import kr.artner.domain.user.entity.User;
+import kr.artner.global.auth.CustomUserDetails;
 import kr.artner.global.auth.LoginMember;
 import kr.artner.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,10 @@ public class ProjectController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Map<String, Object>> createProject(
-            @LoginMember User user,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid ProjectRequest.CreateProjectRequest request
     ) {
+        User user = userDetails.getUser();
         ProjectResponse.CreateProjectResponse response = projectService.createProject(request, user.getId());
         
         return ApiResponse.success(
@@ -41,12 +43,15 @@ public class ProjectController {
         );
     }
 
+
+    
     @PatchMapping("/{projectId}")
     public ApiResponse<Map<String, Object>> updateProject(
             @PathVariable Long projectId,
-            @LoginMember User user,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody @Valid ProjectRequest.UpdateProjectRequest request
     ) {
+        User user = userDetails.getUser();
         ProjectResponse.UpdateProjectResponse response = projectService.updateProject(projectId, request, user.getId());
         
         return ApiResponse.success(
@@ -58,8 +63,9 @@ public class ProjectController {
     @DeleteMapping("/{projectId}")
     public ApiResponse<Void> deleteProject(
             @PathVariable Long projectId,
-            @LoginMember User user
+            @LoginMember CustomUserDetails userDetails
     ) {
+        User user = userDetails.getUser();
         projectService.deleteProject(projectId, user.getId());
         
         return ApiResponse.success("프로젝트가 삭제되었습니다.", null);
@@ -93,9 +99,10 @@ public class ProjectController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Map<String, Object>> requestCollab(
             @PathVariable Long projectId,
-            @LoginMember User user,
+            @LoginMember CustomUserDetails userDetails,
             @RequestBody ProjectCollabRequestRequest.CreateRequest request
     ) {
+        User user = userDetails.getUser();
         ProjectCollabRequestResponse.CreateResponse response = 
                 collabRequestService.createCollabRequest(projectId, request, user.getId());
         
@@ -109,8 +116,9 @@ public class ProjectController {
     public ApiResponse<ProjectCollabRequestResponse.AcceptResponse> acceptCollab(
             @PathVariable Long projectId,
             @PathVariable Long requestId,
-            @LoginMember User user
+            @LoginMember CustomUserDetails userDetails
     ) {
+        User user = userDetails.getUser();
         ProjectCollabRequestResponse.AcceptResponse response = 
                 collabRequestService.acceptCollabRequest(projectId, requestId, user.getId());
         
@@ -121,8 +129,9 @@ public class ProjectController {
     public ApiResponse<ProjectCollabRequestResponse.RejectResponse> rejectCollab(
             @PathVariable Long projectId,
             @PathVariable Long requestId,
-            @LoginMember User user
+            @LoginMember CustomUserDetails userDetails
     ) {
+        User user = userDetails.getUser();
         ProjectCollabRequestResponse.RejectResponse response = 
                 collabRequestService.rejectCollabRequest(projectId, requestId, user.getId());
         

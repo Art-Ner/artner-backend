@@ -40,16 +40,19 @@ public class ProjectCollabRequestService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
         
-        User requester = userRepository.findById(requesterId)
+        User user = userRepository.findById(requesterId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         
+        ArtistProfile requester = artistProfileRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("아티스트 프로필이 존재하지 않습니다."));
+        
         // 프로젝트 소유자는 자신의 프로젝트에 협업 요청할 수 없음
-        if (project.getOwner().getId().equals(requesterId)) {
+        if (project.getOwner().getId().equals(requester.getId())) {
             throw new IllegalArgumentException("자신이 소유한 프로젝트에는 협업 요청할 수 없습니다.");
         }
         
         // 이미 협업 요청한 경우 중복 요청 방지
-        if (collabRequestRepository.findByProjectIdAndRequesterId(projectId, requesterId).isPresent()) {
+        if (collabRequestRepository.findByProjectIdAndRequesterId(projectId, requester.getId()).isPresent()) {
             throw new IllegalArgumentException("이미 협업 요청한 프로젝트입니다.");
         }
         
@@ -74,7 +77,7 @@ public class ProjectCollabRequestService {
         }
         
         // 프로젝트 소유자만 수락 가능
-        if (!collabRequest.getProject().getOwner().getId().equals(ownerId)) {
+        if (!collabRequest.getProject().getOwner().getUser().getId().equals(ownerId)) {
             throw new IllegalArgumentException("프로젝트 소유자만 협업 요청을 수락할 수 있습니다.");
         }
         
@@ -83,20 +86,19 @@ public class ProjectCollabRequestService {
             throw new IllegalArgumentException("이미 처리된 요청입니다.");
         }
         
-        User owner = userRepository.findById(ownerId)
+        User ownerUser = userRepository.findById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        
+        ArtistProfile owner = artistProfileRepository.findByUser(ownerUser)
+                .orElseThrow(() -> new IllegalArgumentException("아티스트 프로필이 존재하지 않습니다."));
         
         // 요청 수락 처리
         collabRequest.acceptRequest(owner);
         
-        // 요청자의 아티스트 프로필 조회
-        ArtistProfile artistProfile = artistProfileRepository.findByUserId(collabRequest.getRequester().getId())
-                .orElseThrow(() -> new IllegalArgumentException("요청자의 아티스트 프로필이 존재하지 않습니다."));
-        
-        // 프로젝트 멤버 생성
+        // 프로젝트 멤버 생성 (요청자가 이미 ArtistProfile)
         ProjectMember member = ProjectMember.builder()
                 .project(collabRequest.getProject())
-                .artist(artistProfile)
+                .artist(collabRequest.getRequester())
                 .joinedAt(LocalDateTime.now())
                 .build();
         
@@ -120,7 +122,7 @@ public class ProjectCollabRequestService {
         }
         
         // 프로젝트 소유자만 거절 가능
-        if (!collabRequest.getProject().getOwner().getId().equals(ownerId)) {
+        if (!collabRequest.getProject().getOwner().getUser().getId().equals(ownerId)) {
             throw new IllegalArgumentException("프로젝트 소유자만 협업 요청을 거절할 수 있습니다.");
         }
         
@@ -129,8 +131,11 @@ public class ProjectCollabRequestService {
             throw new IllegalArgumentException("이미 처리된 요청입니다.");
         }
         
-        User owner = userRepository.findById(ownerId)
+        User ownerUser = userRepository.findById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        
+        ArtistProfile owner = artistProfileRepository.findByUser(ownerUser)
+                .orElseThrow(() -> new IllegalArgumentException("아티스트 프로필이 존재하지 않습니다."));
         
         // 요청 거절 처리
         collabRequest.rejectRequest(owner);
