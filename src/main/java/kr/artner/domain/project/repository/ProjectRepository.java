@@ -13,6 +13,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+import java.util.List;
+
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT p FROM Project p JOIN FETCH p.owner " +
@@ -37,4 +39,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Page<Project> findAllByOwner(ArtistProfile owner, Pageable pageable);
     Page<Project> findAllByOwnerAndStatus(ArtistProfile owner, ProjectStatus status, Pageable pageable);
+    List<Project> findByStatusOrderByCreatedAtDesc(ProjectStatus status);
 }

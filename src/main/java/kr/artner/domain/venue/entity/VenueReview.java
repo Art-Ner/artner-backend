@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@Builder(builderMethodName = "privateBuilder")
 public class VenueReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +45,57 @@ public class VenueReview {
     private LocalDateTime updatedAt;
 
     public void updateReview(BigDecimal rate, String content) {
+        validateRate(rate);
         this.rate = rate;
         this.content = content;
+    }
+
+    private void validateRate(BigDecimal rate) {
+        if (rate == null || rate.compareTo(new BigDecimal("1.0")) < 0 || rate.compareTo(new BigDecimal("5.0")) > 0) {
+            throw new IllegalArgumentException("평점은 1.0에서 5.0 사이여야 합니다.");
+        }
+    }
+
+    public static VenueReviewBuilder builder() {
+        return new VenueReviewBuilder();
+    }
+
+    public static class VenueReviewBuilder {
+        private User user;
+        private Venue venue;
+        private BigDecimal rate;
+        private String content;
+
+        public VenueReviewBuilder user(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public VenueReviewBuilder venue(Venue venue) {
+            this.venue = venue;
+            return this;
+        }
+
+        public VenueReviewBuilder rate(BigDecimal rate) {
+            this.rate = rate;
+            return this;
+        }
+
+        public VenueReviewBuilder content(String content) {
+            this.content = content;
+            return this;
+        }
+
+        public VenueReview build() {
+            if (rate == null || rate.compareTo(new BigDecimal("1.0")) < 0 || rate.compareTo(new BigDecimal("5.0")) > 0) {
+                throw new IllegalArgumentException("평점은 1.0에서 5.0 사이여야 합니다.");
+            }
+            return VenueReview.privateBuilder()
+                    .user(user)
+                    .venue(venue)
+                    .rate(rate)
+                    .content(content)
+                    .build();
+        }
     }
 }
