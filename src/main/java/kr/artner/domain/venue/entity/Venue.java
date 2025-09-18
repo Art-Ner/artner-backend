@@ -64,4 +64,26 @@ public class Venue {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public void updateVenue(String name, String region, String address, String imageUrl, 
+                           Integer seatCapacity, Integer baseRentalFee, String description) {
+        if (name != null) this.name = name;
+        if (region != null) this.region = region;
+        if (address != null) this.address = address;
+        if (imageUrl != null) this.imageUrl = imageUrl;
+        if (seatCapacity != null) {
+            if (seatCapacity <= 0) {
+                throw new IllegalArgumentException("수용인원은 1명 이상이어야 합니다.");
+            }
+            this.seatCapacity = seatCapacity;
+        }
+        if (baseRentalFee != null) {
+            if (baseRentalFee < 0) {
+                throw new IllegalArgumentException("기본 대관비는 0원 이상이어야 합니다.");
+            }
+            this.baseRentalFee = baseRentalFee;
+        }
+        if (description != null) this.description = description;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

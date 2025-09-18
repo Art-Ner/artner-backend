@@ -63,7 +63,15 @@ public class VenueAdminService {
 
         return VenueResponse.VenueListResponse.builder()
                 .venues(venues)
-                .pageInfo(pageInfo)
+                .limit(pageable.getPageSize())
+                .offset((int) pageable.getOffset())
+                .total(venuePage.getTotalElements())
+                .pageInfo(VenueResponse.VenueListResponse.PageInfo.builder()
+                        .totalCount(venuePage.getTotalElements())
+                        .limit(pageable.getPageSize())
+                        .offset((int) pageable.getOffset())
+                        .hasMore(venuePage.hasNext())
+                        .build())
                 .build();
     }
 
