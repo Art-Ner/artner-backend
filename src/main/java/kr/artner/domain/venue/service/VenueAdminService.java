@@ -48,8 +48,7 @@ public class VenueAdminService {
         VenueAdminProfile venueAdminProfile = venueAdminProfileRepository.findById(venueAdminId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.VENUE_ADMIN_PROFILE_NOT_FOUND));
 
-        User adminUser = venueAdminProfile.getUser();
-        Page<Venue> venuePage = venueRepository.findAllByAdminUserOrderByCreatedAtDesc(adminUser, pageable);
+        Page<Venue> venuePage = venueRepository.findAllByAdminProfileOrderByCreatedAtDesc(venueAdminProfile, pageable);
 
         List<VenueResponse.VenueItem> venues = venuePage.getContent().stream()
                 .map(this::convertToVenueItem)
