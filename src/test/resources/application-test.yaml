@@ -1,0 +1,62 @@
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+        registration:
+          google:
+            client-id: "test-google-client-id"
+            client-secret: "test-google-secret"
+            redirect-uri: "http://localhost/test"
+          kakao:
+            provider: kakao
+            client-id: "test-kakao-client-id"
+            redirect-uri: "http://localhost/test"
+            authorization-grant-type: authorization_code
+  cloud:
+    aws:
+      s3:
+        enabled: false
+        bucket: test-bucket
+      credentials:
+        access-key: test-access-key
+        secret-key: test-secret-key
+      region:
+        static: ap-northeast-2
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # Changed from update to create-drop for isolated test environments
+    properties:
+      hibernate:
+        packagesToScan: kr.artner.domain
+        
+    show-sql: true
+    open-in-view: false
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB_NAME}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari: # Added HikariCP specific properties for completeness
+      pool-name: test-connection-pool
+      maximum-pool-size: 5
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+jwt:
+  secret: thisisalongandsecuretestjwtsecretkeyforartnerapp
+  access-expiration-ms: 3600000 # 1 hour
+  refresh-expiration-ms: 86400000 # 24 hours
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.type.descriptor.sql: TRACE

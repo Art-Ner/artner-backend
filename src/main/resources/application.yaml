@@ -1,0 +1,90 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: artner
+  docker:
+    compose:
+      enabled: true
+
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT:5432}/${POSTGRES_DB_NAME}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+
+  # AWS S3 Configuration
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: ${AWS_S3_BUCKET}
+
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  # Spring Security OAuth2 Configuration
+  security:
+    oauth2:
+      client:
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id # 사용자 정보를 가져왔을 때, 사용자를 식별하는 고유 키 값 (카카오는 'id'임)
+
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: "${baseUrl}/api/auth/google/callback"
+            scope:
+              - profile
+              - email
+          
+          kakao:
+            provider: kakao # 위에서 정의한 provider 이름을 사용
+            client-id: ${KAKAO_CLIENT_ID}
+            # client-secret: ${KAKAO_CLIENT_SECRET} # 카카오는 Client Secret이 필수 아님 (필요시 추가)
+            redirect-uri: "${baseUrl}/api/auth/kakao/callback"
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post # 카카오 문서에 명시된 인증 방식
+            scope:
+              - profile_nickname
+
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-validity: 604800000
+  refresh-token-validity: 604800000
+
+# Logging Configuration
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    com.zaxxer.hikari: debug
+    org.springframework.boot.autoconfigure.jdbc: debug

@@ -3,7 +3,7 @@ package kr.artner.domain.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import kr.artner.domain.user.OAuthProvider;
+import kr.artner.global.auth.oauth.enums.OAuthProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,5 +38,8 @@ public class UserRequest {
         private String username;
 
         private String phone;
+
+        @NotBlank(message = "닉네임은 필수입니다")
+        private String nickname;
     }
 }

@@ -1,9 +1,9 @@
 package kr.artner.domain.user.service;
 
-import kr.artner.domain.user.User;
 import kr.artner.domain.user.dto.UserConverter;
 import kr.artner.domain.user.dto.UserRequest;
 import kr.artner.domain.user.dto.UserResponse;
+import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.repository.UserRepository;
 import kr.artner.global.exception.ErrorStatus;
 import kr.artner.global.exception.GeneralException;
@@ -14,6 +14,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import kr.artner.global.auth.oauth.enums.OAuthProvider;
+import kr.artner.domain.user.enums.UserRole;
+import kr.artner.domain.artist.entity.ArtistProfile;
+import kr.artner.domain.artist.entity.ArtistGenre;
+import kr.artner.domain.artist.entity.ArtistGenreId;
+import kr.artner.domain.artist.entity.ArtistRole;
+import kr.artner.domain.artist.entity.ArtistRoleId;
+import kr.artner.domain.artist.repository.ArtistProfileRepository;
+import kr.artner.domain.artist.repository.ArtistGenreRepository;
+import kr.artner.domain.artist.repository.ArtistRoleRepository;
+import kr.artner.domain.artist.dto.ArtistRequest;
+import kr.artner.domain.artist.dto.ArtistResponse;
+import kr.artner.domain.common.enums.GenreCode;
+import kr.artner.domain.artist.enums.RoleCode;
+import kr.artner.domain.venue.dto.VenueRequest;
+import kr.artner.domain.venue.dto.VenueResponse;
+import kr.artner.domain.venue.service.VenueAdminService;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,6 +42,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserConverter userConverter;
+    private final ArtistProfileRepository artistProfileRepository;
+    private final ArtistGenreRepository artistGenreRepository;
+    private final ArtistRoleRepository artistRoleRepository;
+    private final VenueAdminService venueAdminService;
 
     @Transactional
     public UserResponse.JoinResponse join(UserRequest.JoinDTO request) {
@@ -60,7 +85,7 @@ public class UserService {
             }
         }
         
-        user.updateProfile(newUsername, request.getPhone());
+        user.updateProfile(newUsername, request.getPhone(), request.getNickname());
         return userConverter.toUpdateResponse(user);
     }
 
@@ -80,5 +105,110 @@ public class UserService {
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+    }
+
+    @Transactional
+    public User findOrCreateUser(String email, String username, OAuthProvider oauthProvider) {
+        return userRepository.findByOauthProviderAndEmail(oauthProvider, email)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(email)
+                            .username(username)
+                            .nickname(username) // Default nickname to username
+                            .oauthProvider(oauthProvider)
+                            .role(UserRole.USER) // Default role to USER
+                            .build();
+                    return userRepository.save(newUser);
+                });
+    }
+
+    @Transactional
+    public User findOrCreateUser(String email, String username, String nickname, OAuthProvider oauthProvider) {
+        return userRepository.findByOauthProviderAndEmail(oauthProvider, email)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(email)
+                            .username(username)
+                            .nickname(nickname)
+                            .oauthProvider(oauthProvider)
+                            .role(UserRole.USER)
+                            .build();
+                    return userRepository.save(newUser);
+                });
+    }
+
+    @Transactional
+    public ArtistResponse.CreateArtistProfileResponse createArtistProfile(Long userId, ArtistRequest.CreateArtistProfile request) {
+        User user = getUserOrThrow(userId);
+
+        // 이미 아티스트 프로필이 있는지 확인
+        Optional<ArtistProfile> existingProfile = artistProfileRepository.findByUser(user);
+        if (existingProfile.isPresent()) {
+            throw new GeneralException(ErrorStatus.ARTIST_PROFILE_ALREADY_EXISTS);
+        }
+
+        // 아티스트 프로필 생성
+        ArtistProfile artistProfile = ArtistProfile.builder()
+                .user(user)
+                .artistName(request.getArtistName())
+                .headline(request.getHeadline())
+                .bio(request.getBio())
+                .urls(request.getUrls())
+                .build();
+
+        ArtistProfile savedProfile = artistProfileRepository.save(artistProfile);
+
+        // 장르 저장
+        if (request.getGenres() != null && !request.getGenres().isEmpty()) {
+            List<ArtistGenre> artistGenres = new ArrayList<>();
+            for (String genreName : request.getGenres()) {
+                try {
+                    GenreCode genreCode = GenreCode.valueOf(genreName.toUpperCase());
+                    ArtistGenreId genreId = new ArtistGenreId(savedProfile.getId(), genreCode);
+                    ArtistGenre artistGenre = ArtistGenre.builder()
+                            .id(genreId)
+                            .artistProfile(savedProfile)
+                            .build();
+                    artistGenres.add(artistGenre);
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid genre code: {}", genreName);
+                }
+            }
+            artistGenreRepository.saveAll(artistGenres);
+        }
+
+        // 역할 저장
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            List<ArtistRole> artistRoles = new ArrayList<>();
+            for (String roleName : request.getRoles()) {
+                try {
+                    RoleCode roleCode = RoleCode.valueOf(roleName.toUpperCase());
+                    ArtistRoleId roleId = new ArtistRoleId(savedProfile.getId(), roleCode);
+                    ArtistRole artistRole = ArtistRole.builder()
+                            .id(roleId)
+                            .artistProfile(savedProfile)
+                            .build();
+                    artistRoles.add(artistRole);
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid role code: {}", roleName);
+                }
+            }
+            artistRoleRepository.saveAll(artistRoles);
+        }
+
+        return ArtistResponse.CreateArtistProfileResponse.builder()
+                .id(savedProfile.getId())
+                .artistName(savedProfile.getArtistName())
+                .headline(savedProfile.getHeadline())
+                .bio(savedProfile.getBio())
+                .urls(savedProfile.getUrls())
+                .message("아티스트 프로필이 성공적으로 생성되었습니다.")
+                .build();
+    }
+
+    @Transactional
+    public VenueResponse.CreateVenueAdminProfileResponse createVenueAdminProfile(Long userId, VenueRequest.CreateVenueAdminProfile request) {
+        User user = getUserOrThrow(userId);
+        return venueAdminService.createVenueAdminProfile(user, request);
     }
 }

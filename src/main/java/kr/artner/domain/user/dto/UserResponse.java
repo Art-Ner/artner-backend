@@ -40,4 +40,13 @@ public class UserResponse {
         private String username;
         private String phone;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetUserInfoResponse {
+        private Long id;
+        private String username;
+    }
 }

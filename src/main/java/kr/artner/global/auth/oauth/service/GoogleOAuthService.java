@@ -1,15 +1,16 @@
 package kr.artner.global.auth.oauth.service;
 
-import java.util.Map;
 import java.util.Optional;
 
-import kr.artner.domain.user.User;
-import kr.artner.domain.user.repository.UserRepository;
+import kr.artner.domain.user.entity.User;
+import kr.artner.domain.user.repository.UserRepository; // Keep for now if other methods use it
+import kr.artner.domain.user.service.UserService; // Import UserService
 import kr.artner.global.auth.jwt.JwtTokenProvider;
 import kr.artner.global.auth.jwt.dto.TokenReissueRequest;
 import kr.artner.global.auth.jwt.dto.TokenResponse;
 import kr.artner.global.auth.oauth.dto.GoogleTokenResponse;
 import kr.artner.global.auth.oauth.dto.GoogleUserInfo;
+import kr.artner.global.auth.oauth.enums.OAuthProvider; // Import OAuthProvider
 import kr.artner.global.exception.ErrorStatus;
 import kr.artner.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -29,18 +32,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class GoogleOAuthService {
 
-    @Value("${google.oauth.client-id}")
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String GOOGLE_CLIENT_ID;
 
-    @Value("${google.oauth.client-secret}")
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String GOOGLE_CLIENT_SECRET;
 
-    @Value("${google.oauth.redirect-uri}")
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String REDIRECT_URI;
 
     private final RestTemplate restTemplate;
-    private final UserRepository userRepository;
+    private final UserRepository userRepository; // Keep for now
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService; // Inject UserService
 
     public String getGoogleLoginUrl() {
         System.out.println(REDIRECT_URI);
@@ -68,7 +72,11 @@ public class GoogleOAuthService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        return restTemplate.postForObject(tokenRequestUrl, request, GoogleTokenResponse.class);
+        try {
+            return restTemplate.postForObject(tokenRequestUrl, request, GoogleTokenResponse.class);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new GeneralException(ErrorStatus.GOOGLE_OAUTH_ERROR, e);
+        }
     }
 
 
@@ -79,14 +87,17 @@ public class GoogleOAuthService {
         headers.setBearerAuth(accessToken);
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
-        ResponseEntity<GoogleUserInfo> response = restTemplate.exchange(
-                userInfoUrl,
-                HttpMethod.GET,
-                request,
-                GoogleUserInfo.class
-        );
-
-        return response.getBody();
+        try {
+            ResponseEntity<GoogleUserInfo> response = restTemplate.exchange(
+                    userInfoUrl,
+                    HttpMethod.GET,
+                    request,
+                    GoogleUserInfo.class
+            );
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new GeneralException(ErrorStatus.GOOGLE_OAUTH_ERROR, e);
+        }
     }
 
 
@@ -97,15 +108,11 @@ public class GoogleOAuthService {
         // 2. accessToken -> 유저 정보 받기
         GoogleUserInfo userInfo = requestUserInfo(tokenResponse.getAccessToken());
 
-        Optional<User> optionalUser = userRepository.findByEmail(userInfo.getEmail());
+        // Use userService to find or create user
+        User user = userService.findOrCreateUser(userInfo.getEmail(), userInfo.getName(), OAuthProvider.GOOGLE);
 
-        // 3. 존재하는 회원이면 token 발급
-        if (optionalUser.isPresent()) {
-            return jwtTokenProvider.generateToken(optionalUser.get().getId());
-        }
-
-        // 존재하지 않는 회원이면 예외 던지기
-        throw new GeneralException(ErrorStatus.MEMBER_NOT_REGISTERED_BY_GOOGLE);
+        // 3. Generate application tokens
+        return jwtTokenProvider.generateToken(user.getId());
     }
 
 
