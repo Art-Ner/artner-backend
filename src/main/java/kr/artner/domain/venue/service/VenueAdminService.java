@@ -48,8 +48,7 @@ public class VenueAdminService {
         VenueAdminProfile venueAdminProfile = venueAdminProfileRepository.findById(venueAdminId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.VENUE_ADMIN_PROFILE_NOT_FOUND));
 
-        User adminUser = venueAdminProfile.getUser();
-        Page<Venue> venuePage = venueRepository.findAllByAdminUserOrderByCreatedAtDesc(adminUser, pageable);
+        Page<Venue> venuePage = venueRepository.findAllByAdminProfileOrderByCreatedAtDesc(venueAdminProfile, pageable);
 
         List<VenueResponse.VenueItem> venues = venuePage.getContent().stream()
                 .map(this::convertToVenueItem)
@@ -64,7 +63,15 @@ public class VenueAdminService {
 
         return VenueResponse.VenueListResponse.builder()
                 .venues(venues)
-                .pageInfo(pageInfo)
+                .limit(pageable.getPageSize())
+                .offset((int) pageable.getOffset())
+                .total(venuePage.getTotalElements())
+                .pageInfo(VenueResponse.VenueListResponse.PageInfo.builder()
+                        .totalCount(venuePage.getTotalElements())
+                        .limit(pageable.getPageSize())
+                        .offset((int) pageable.getOffset())
+                        .hasMore(venuePage.hasNext())
+                        .build())
                 .build();
     }
 

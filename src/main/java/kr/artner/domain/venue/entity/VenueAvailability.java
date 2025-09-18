@@ -1,7 +1,6 @@
 package kr.artner.domain.venue.entity;
 
 import jakarta.persistence.*;
-import kr.artner.domain.venue.enums.AvailabilityKind;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -22,9 +21,9 @@ public class VenueAvailability {
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AvailabilityKind kind;
+    @Column(name = "is_blocked", nullable = false)
+    @Builder.Default
+    private Boolean isBlocked = false;
 
     @Column(name = "start_dt", nullable = false)
     private LocalDateTime startDt;
@@ -34,4 +33,23 @@ public class VenueAvailability {
 
     @Column(length = 255)
     private String note;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    public void updateAvailability(LocalDateTime startDt, LocalDateTime endDt, String note) {
+        if (startDt != null) {
+            this.startDt = startDt;
+        }
+        if (endDt != null) {
+            this.endDt = endDt;
+        }
+        if (note != null) {
+            this.note = note;
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
 }

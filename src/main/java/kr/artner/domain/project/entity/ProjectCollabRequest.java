@@ -1,6 +1,7 @@
 package kr.artner.domain.project.entity;
 
 import jakarta.persistence.*;
+import kr.artner.domain.artist.entity.ArtistProfile;
 import kr.artner.domain.project.enums.CollabStatus;
 import kr.artner.domain.user.entity.User;
 import lombok.*;
@@ -28,7 +29,7 @@ public class ProjectCollabRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", nullable = false)
-    private User requester;
+    private ArtistProfile requester;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -45,5 +46,17 @@ public class ProjectCollabRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "decided_by")
-    private User decidedBy;
+    private ArtistProfile decidedBy;
+
+    public void acceptRequest(ArtistProfile decidedBy) {
+        this.status = CollabStatus.ACCEPTED;
+        this.decidedAt = LocalDateTime.now();
+        this.decidedBy = decidedBy;
+    }
+
+    public void rejectRequest(ArtistProfile decidedBy) {
+        this.status = CollabStatus.REJECTED;
+        this.decidedAt = LocalDateTime.now();
+        this.decidedBy = decidedBy;
+    }
 }

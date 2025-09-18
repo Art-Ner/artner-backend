@@ -47,4 +47,31 @@ public class Booking {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public void approve() {
+        if (this.status != BookingStatus.REQUESTED) {
+            throw new IllegalStateException("REQUESTED 상태에서만 승인할 수 있습니다.");
+        }
+        this.status = BookingStatus.APPROVED;
+        this.decidedAt = LocalDateTime.now();
+    }
+
+    public void reject() {
+        if (this.status != BookingStatus.REQUESTED) {
+            throw new IllegalStateException("REQUESTED 상태에서만 거절할 수 있습니다.");
+        }
+        this.status = BookingStatus.REJECTED;
+        this.decidedAt = LocalDateTime.now();
+    }
+
+    public void cancel() {
+        if (this.status == BookingStatus.CANCELLED) {
+            throw new IllegalStateException("이미 취소된 요청입니다.");
+        }
+        if (this.status != BookingStatus.REQUESTED) {
+            throw new IllegalStateException("REQUESTED 상태에서만 취소할 수 있습니다.");
+        }
+        this.status = BookingStatus.CANCELLED;
+        this.decidedAt = LocalDateTime.now();
+    }
 }

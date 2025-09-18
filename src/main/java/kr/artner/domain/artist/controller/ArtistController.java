@@ -182,13 +182,4 @@ public class ArtistController {
         return ApiResponse.success("공연 이력이 성공적으로 삭제되었습니다.");
     }
 
-    @GetMapping("/{artistProfileId}/reviews")
-    public ResponseEntity<?> getArtistReviews(
-            @PathVariable Long artistProfileId,
-            @RequestParam(value = "limit", required = false) Integer limit,
-            @RequestParam(value = "offset", required = false) Integer offset
-    ) {
-        // TODO: 아티스트 프로필의 유저간 리뷰 목록 조회
-        return ResponseEntity.ok().build();
-    }
 }
