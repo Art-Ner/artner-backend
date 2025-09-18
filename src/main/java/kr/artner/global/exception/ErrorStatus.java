@@ -24,7 +24,8 @@ public enum ErrorStatus {
     VENUE_REVIEW_ALREADY_EXISTS("VENUE_REVIEW_ALREADY_EXISTS", "이미 해당 공간에 대한 리뷰를 작성하셨습니다."),
     VENUE_REVIEW_NOT_FOUND("VENUE_REVIEW_NOT_FOUND", "해당 공간 리뷰를 찾을 수 없습니다."),
     CONVERSATION_NOT_FOUND("CONVERSATION_NOT_FOUND", "대화방을 찾을 수 없습니다."),
-    ACCESS_DENIED("ACCESS_DENIED", "접근 권한이 없습니다.");
+    ACCESS_DENIED("ACCESS_DENIED", "접근 권한이 없습니다."),
+    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다.");
 
     private final String code;
     private final String message;

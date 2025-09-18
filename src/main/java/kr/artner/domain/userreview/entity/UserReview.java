@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@Builder(builderMethodName = "privateBuilder")
 public class UserReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,5 +41,41 @@ public class UserReview {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public static UserReviewBuilder builder() {
+        return new UserReviewBuilder();
+    }
+
+    public static class UserReviewBuilder {
+        private User user;
+        private User targetUser;
+        private String content;
+
+        public UserReviewBuilder user(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public UserReviewBuilder targetUser(User targetUser) {
+            this.targetUser = targetUser;
+            return this;
+        }
+
+        public UserReviewBuilder content(String content) {
+            this.content = content;
+            return this;
+        }
+
+        public UserReview build() {
+            if (user != null && targetUser != null && user.getId().equals(targetUser.getId())) {
+                throw new IllegalArgumentException("자기 자신에게는 리뷰를 작성할 수 없습니다.");
+            }
+            return UserReview.privateBuilder()
+                    .user(user)
+                    .targetUser(targetUser)
+                    .content(content)
+                    .build();
+        }
     }
 }
