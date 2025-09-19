@@ -62,14 +62,14 @@ public class ArtistController {
     }
 
     @GetMapping
-    public ApiResponse<kr.artner.domain.artist.dto.ArtistResponse.ArtistListResponse> getArtists(
+    public ApiResponse<kr.artner.domain.artist.dto.ArtistResponse.ArtistListWithPageResponse> getArtists(
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "limit", required = false) Integer limit,
             @RequestParam(value = "offset", required = false) Integer offset,
             @RequestParam(value = "genre", required = false) String genre,
             @RequestParam(value = "role", required = false) String role
     ) {
-        kr.artner.domain.artist.dto.ArtistResponse.ArtistListResponse response =
+        kr.artner.domain.artist.dto.ArtistResponse.ArtistListWithPageResponse response =
                 artistService.getArtists(keyword, limit, offset, genre, role);
         return ApiResponse.success(response);
     }

@@ -51,7 +51,7 @@ public class ArtistService {
     }
 
     @Transactional(readOnly = true)
-    public ArtistResponse.ArtistListResponse getArtists(String keyword, Integer limit, Integer offset, String genre, String role) {
+    public ArtistResponse.ArtistListWithPageResponse getArtists(String keyword, Integer limit, Integer offset, String genre, String role) {
         // 기본값 설정
         int pageSize = (limit != null && limit > 0) ? Math.min(limit, 100) : 10;
         int pageNumber = (offset != null && offset >= 0) ? offset / pageSize : 0;
@@ -80,8 +80,12 @@ public class ArtistService {
                 .hasMore(artistPage.hasNext())
                 .build();
 
-        return ArtistResponse.ArtistListResponse.builder()
+        ArtistResponse.ArtistListResponse result = ArtistResponse.ArtistListResponse.builder()
                 .artists(artists)
+                .build();
+
+        return ArtistResponse.ArtistListWithPageResponse.builder()
+                .result(result)
                 .pageInfo(pageInfo)
                 .build();
     }

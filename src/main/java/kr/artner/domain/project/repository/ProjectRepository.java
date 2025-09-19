@@ -37,6 +37,24 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p JOIN FETCH p.owner")
     List<Project> findAllProjects();
 
+    @Query("SELECT p FROM Project p WHERE p.conceptEmbedding IS NULL")
+    List<Project> findAllByConceptEmbeddingIsNull();
+
+    @Query(value = "SELECT p.*, (p.concept_embedding <=> CAST(:queryVector AS vector)) as similarity_distance " +
+           "FROM projects p " +
+           "WHERE p.concept_embedding IS NOT NULL " +
+           "ORDER BY p.concept_embedding <=> CAST(:queryVector AS vector) " +
+           "LIMIT :limit",
+           nativeQuery = true)
+    List<Object[]> findSimilarProjectsByEmbeddingWithDistance(@Param("queryVector") String queryVector, @Param("limit") int limit);
+
+    @Query(value = "SELECT * FROM projects p " +
+           "WHERE p.concept_embedding IS NOT NULL " +
+           "ORDER BY p.concept_embedding <=> CAST(:queryVector AS vector) " +
+           "LIMIT :limit",
+           nativeQuery = true)
+    List<Project> findSimilarProjectsByEmbedding(@Param("queryVector") String queryVector, @Param("limit") int limit);
+
     Page<Project> findAllByOwner(ArtistProfile owner, Pageable pageable);
     Page<Project> findAllByOwnerAndStatus(ArtistProfile owner, ProjectStatus status, Pageable pageable);
     List<Project> findByStatusOrderByCreatedAtDesc(ProjectStatus status);

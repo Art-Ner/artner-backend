@@ -3,7 +3,7 @@ package kr.artner.global.auth.oauth.service;
 import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.service.UserService;
 import kr.artner.global.auth.jwt.JwtTokenProvider;
-import kr.artner.global.auth.jwt.dto.TokenResponse.TokenDto;
+import kr.artner.global.auth.jwt.dto.TokenResponse;
 import kr.artner.global.auth.oauth.dto.KakaoTokenResponse;
 import kr.artner.global.auth.oauth.dto.KakaoUserInfo;
 import kr.artner.global.auth.oauth.enums.OAuthProvider;
@@ -54,7 +54,7 @@ public class KakaoOAuthService {
     }
 
     @Transactional
-    public TokenDto processKakaoLogin(String code) {
+    public TokenResponse.LoginResponse processKakaoLogin(String code) {
         KakaoTokenResponse tokenResponse = requestAccessToken(code);
         KakaoUserInfo userInfo = requestUserInfo(tokenResponse.getAccessToken());
 
@@ -71,7 +71,20 @@ public class KakaoOAuthService {
 
         User user = userService.findOrCreateUser(email, username, nickname, OAuthProvider.KAKAO);
 
-        return jwtTokenProvider.generateToken(user.getId());
+        // Generate application tokens
+        TokenResponse.TokenDto tokens = jwtTokenProvider.generateToken(user.getId());
+
+        // Create login response with user info
+        return TokenResponse.LoginResponse.builder()
+                .accessToken(tokens.getAccessToken())
+                .refreshToken(tokens.getRefreshToken())
+                .user(TokenResponse.LoginResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .username(user.getUsername())
+                        .oauthProvider(user.getOauthProvider().name().toLowerCase())
+                        .build())
+                .build();
     }
 
     private String getUsernameFromKakaoInfo(KakaoUserInfo userInfo) {

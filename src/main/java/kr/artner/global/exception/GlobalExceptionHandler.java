@@ -29,10 +29,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(GeneralException.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneralException(GeneralException ex) {
-        log.error("General exception occurred: {}", ex.getErrorStatus().getCode(), ex);
-        
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.failure(ex.getErrorStatus().getMessage()));
+        ErrorStatus errorStatus = ex.getErrorStatus();
+        HttpStatus httpStatus = errorStatus.getHttpStatus();
+
+        log.error("General exception occurred: {} (HTTP {})", errorStatus.getCode(), httpStatus.value(), ex);
+
+        return ResponseEntity.status(httpStatus)
+                .body(ApiResponse.failure(errorStatus.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
