@@ -18,6 +18,7 @@ public class CorsProperties {
             "http://localhost:3000",
             "http://localhost:8080",
             "https://artner.kr",
+            "https://www.artner.kr",
             "null"
     ); // <-- 여기에 기본값을 지정!
 }
