@@ -2,15 +2,13 @@ package kr.artner.global.auth.oauth.controller;
 
 import kr.artner.global.auth.jwt.JwtTokenProvider;
 import kr.artner.global.auth.jwt.dto.TokenReissueRequest;
-import kr.artner.global.auth.jwt.dto.TokenResponse.TokenDto;
+import kr.artner.global.auth.jwt.dto.TokenResponse;
 import kr.artner.global.auth.oauth.service.GoogleOAuthService;
 import kr.artner.global.auth.oauth.service.KakaoOAuthService; // Added import
 import kr.artner.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -29,9 +27,9 @@ public class AuthController {
     }
 
     @GetMapping("/google/callback")
-    public ApiResponse<TokenDto> googleCallback(@RequestParam String code) {
-        TokenDto tokens = googleOAuthService.processGoogleLogin(code);
-        return ApiResponse.success(tokens);
+    public ApiResponse<TokenResponse.LoginResponse> googleCallback(@RequestParam String code) {
+        TokenResponse.LoginResponse loginResponse = googleOAuthService.processGoogleLogin(code);
+        return ApiResponse.success(loginResponse);
     }
 
     // Kakao Login Endpoints
@@ -42,14 +40,14 @@ public class AuthController {
     }
 
     @GetMapping("/kakao/callback")
-    public ApiResponse<TokenDto> kakaoCallback(@RequestParam String code) {
-        TokenDto tokens = kakaoOAuthService.processKakaoLogin(code);
-        return ApiResponse.success(tokens);
+    public ApiResponse<TokenResponse.LoginResponse> kakaoCallback(@RequestParam String code) {
+        TokenResponse.LoginResponse loginResponse = kakaoOAuthService.processKakaoLogin(code);
+        return ApiResponse.success(loginResponse);
     }
 
     @PostMapping("/token/reissue")
-    public ApiResponse<TokenDto> reissueToken(@RequestBody TokenReissueRequest request) {
-        TokenDto tokens = jwtTokenProvider.reissue(request.getRefreshToken());
+    public ApiResponse<TokenResponse.TokenDto> reissueToken(@RequestBody TokenReissueRequest request) {
+        TokenResponse.TokenDto tokens = jwtTokenProvider.reissue(request.getRefreshToken());
         return ApiResponse.success(tokens);
     }
 }

@@ -101,7 +101,7 @@ public class GoogleOAuthService {
     }
 
 
-    public TokenResponse.TokenDto processGoogleLogin(String code) {
+    public TokenResponse.LoginResponse processGoogleLogin(String code) {
         // 1. code -> accessToken 받기
         GoogleTokenResponse tokenResponse = requestAccessToken(code);
 
@@ -112,7 +112,19 @@ public class GoogleOAuthService {
         User user = userService.findOrCreateUser(userInfo.getEmail(), userInfo.getName(), OAuthProvider.GOOGLE);
 
         // 3. Generate application tokens
-        return jwtTokenProvider.generateToken(user.getId());
+        TokenResponse.TokenDto tokens = jwtTokenProvider.generateToken(user.getId());
+
+        // 4. Create login response with user info
+        return TokenResponse.LoginResponse.builder()
+                .accessToken(tokens.getAccessToken())
+                .refreshToken(tokens.getRefreshToken())
+                .user(TokenResponse.LoginResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .username(user.getUsername())
+                        .oauthProvider(user.getOauthProvider().name().toLowerCase())
+                        .build())
+                .build();
     }
 
 

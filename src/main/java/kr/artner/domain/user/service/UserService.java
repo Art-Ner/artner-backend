@@ -141,11 +141,7 @@ public class UserService {
     public ArtistResponse.CreateArtistProfileResponse createArtistProfile(Long userId, ArtistRequest.CreateArtistProfile request) {
         User user = getUserOrThrow(userId);
 
-        // 이미 아티스트 프로필이 있는지 확인
-        Optional<ArtistProfile> existingProfile = artistProfileRepository.findByUser(user);
-        if (existingProfile.isPresent()) {
-            throw new GeneralException(ErrorStatus.ARTIST_PROFILE_ALREADY_EXISTS);
-        }
+        // 중복 생성 허용 - 기존 검증 로직 제거
 
         // 아티스트 프로필 생성
         ArtistProfile artistProfile = ArtistProfile.builder()
@@ -196,13 +192,30 @@ public class UserService {
             artistRoleRepository.saveAll(artistRoles);
         }
 
-        return ArtistResponse.CreateArtistProfileResponse.builder()
+        // 저장된 장르와 역할 정보 조회
+        List<String> savedGenres = artistGenreRepository.findByArtistProfile(savedProfile)
+                .stream()
+                .map(genre -> genre.getId().getGenreCode().name())
+                .toList();
+
+        List<String> savedRoles = artistRoleRepository.findByArtistProfile(savedProfile)
+                .stream()
+                .map(role -> role.getId().getRoleCode().name())
+                .toList();
+
+        ArtistResponse.ArtistProfileDetail artistProfileDetail = ArtistResponse.ArtistProfileDetail.builder()
                 .id(savedProfile.getId())
+                .user_id(savedProfile.getUser().getId())
                 .artistName(savedProfile.getArtistName())
                 .headline(savedProfile.getHeadline())
                 .bio(savedProfile.getBio())
                 .urls(savedProfile.getUrls())
-                .message("아티스트 프로필이 성공적으로 생성되었습니다.")
+                .genres(savedGenres)
+                .roles(savedRoles)
+                .build();
+
+        return ArtistResponse.CreateArtistProfileResponse.builder()
+                .artistProfile(artistProfileDetail)
                 .build();
     }
 

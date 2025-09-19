@@ -78,8 +78,13 @@ spring:
 # JWT Configuration
 jwt:
   secret: ${JWT_SECRET}
-  access-token-validity: 3600000
+  access-token-validity: 604800000
   refresh-token-validity: 604800000
+
+# OpenAI Configuration
+openai:
+  api:
+    key: ${OPENAI_API_KEY:}
 
 # Logging Configuration
 logging:

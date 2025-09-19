@@ -62,14 +62,14 @@ public class ArtistController {
     }
 
     @GetMapping
-    public ApiResponse<kr.artner.domain.artist.dto.ArtistResponse.ArtistListResponse> getArtists(
+    public ApiResponse<kr.artner.domain.artist.dto.ArtistResponse.ArtistListWithPageResponse> getArtists(
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "limit", required = false) Integer limit,
             @RequestParam(value = "offset", required = false) Integer offset,
             @RequestParam(value = "genre", required = false) String genre,
             @RequestParam(value = "role", required = false) String role
     ) {
-        kr.artner.domain.artist.dto.ArtistResponse.ArtistListResponse response =
+        kr.artner.domain.artist.dto.ArtistResponse.ArtistListWithPageResponse response =
                 artistService.getArtists(keyword, limit, offset, genre, role);
         return ApiResponse.success(response);
     }
@@ -182,13 +182,4 @@ public class ArtistController {
         return ApiResponse.success("공연 이력이 성공적으로 삭제되었습니다.");
     }
 
-    @GetMapping("/{artistProfileId}/reviews")
-    public ResponseEntity<?> getArtistReviews(
-            @PathVariable Long artistProfileId,
-            @RequestParam(value = "limit", required = false) Integer limit,
-            @RequestParam(value = "offset", required = false) Integer offset
-    ) {
-        // TODO: 아티스트 프로필의 유저간 리뷰 목록 조회
-        return ResponseEntity.ok().build();
-    }
 }

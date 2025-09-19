@@ -1,6 +1,7 @@
 package kr.artner.domain.artist.entity;
 
 import jakarta.persistence.*;
+import kr.artner.domain.artist.converter.RoleCodeArrayConverter;
 import kr.artner.domain.artist.enums.RoleCode;
 import lombok.*;
 import java.time.LocalDate;
@@ -27,10 +28,8 @@ public class ConcertHistory {
     @Column(name = "work_title", length = 200, nullable = false)
     private String workTitle;
 
-    @ElementCollection(targetClass = RoleCode.class)
-    @CollectionTable(name = "concert_history_roles", joinColumns = @JoinColumn(name = "concert_history_id"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role_code", nullable = false)
+    @Column(name = "role_code", nullable = false, columnDefinition = "varchar[]")
+    @Convert(converter = RoleCodeArrayConverter.class)
     private List<RoleCode> roleCodes;
 
     @Column(name = "started_on")
