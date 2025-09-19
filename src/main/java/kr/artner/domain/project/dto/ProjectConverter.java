@@ -58,7 +58,19 @@ public class ProjectConverter {
                 .build();
     }
 
-    public static ProjectResponse.ProjectSummary toProjectSummary(Project project, Integer currentParticipants) {
+    public static ProjectResponse.ProjectSummary toProjectSummary(
+            Project project,
+            Integer currentParticipants,
+            List<ProjectMember> members
+    ) {
+        List<ProjectResponse.ProjectSummary.ParticipantSummary> participants = members.stream()
+                .map(member -> ProjectResponse.ProjectSummary.ParticipantSummary.builder()
+                        .artistProfileId(member.getArtist().getId())
+                        .name(member.getArtist().getArtistName())
+                        .imageUrl(member.getArtist().getProfileImageUrl())
+                        .build())
+                .collect(Collectors.toList());
+
         return ProjectResponse.ProjectSummary.builder()
                 .id(project.getId())
                 .title(project.getTitle())
@@ -71,6 +83,7 @@ public class ProjectConverter {
                         .id(project.getOwner().getId())
                         .username(project.getOwner().getArtistName())
                         .build())
+                .participants(participants)
                 .build();
     }
 

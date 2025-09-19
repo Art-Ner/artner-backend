@@ -59,6 +59,7 @@ public class ProjectResponse {
         private Integer currentParticipants;
         private LocalDateTime createdAt;
         private OwnerSummary owner;
+        private List<ParticipantSummary> participants;
 
         @Getter
         @Builder
@@ -67,6 +68,16 @@ public class ProjectResponse {
         public static class OwnerSummary {
             private Long id;
             private String username;
+        }
+
+        @Getter
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class ParticipantSummary {
+            private Long artistProfileId;
+            private String name;
+            private String imageUrl;
         }
     }
 

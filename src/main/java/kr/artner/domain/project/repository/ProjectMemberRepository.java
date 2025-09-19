@@ -24,6 +24,9 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
     @EntityGraph(attributePaths = "artist")
     List<ProjectMember> findByProjectIdOrderByJoinedAt(Long projectId);
 
+    @EntityGraph(attributePaths = "artist")
+    List<ProjectMember> findByProjectIdInOrderByJoinedAt(List<Long> projectIds);
+
     // 아티스트 프로필 기준 페이지 조회 (develop 쪽 메서드 유지)
     Page<ProjectMember> findAllByArtist(ArtistProfile artist, Pageable pageable);
 
