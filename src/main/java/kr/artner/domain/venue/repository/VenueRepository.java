@@ -6,6 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface VenueRepository extends JpaRepository<Venue, Long> {
     Page<Venue> findAllByAdminProfileOrderByCreatedAtDesc(VenueAdminProfile adminProfile, Pageable pageable);
     
@@ -22,4 +25,10 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
     
     // 모든 공연장 (필터 없음)
     Page<Venue> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    // KOPIS 공연장 ID로 조회
+    Optional<Venue> findByKopisVenueId(String kopisVenueId);
+
+    // KOPIS 소스의 모든 공연장 조회
+    List<Venue> findBySource(String source);
 }
