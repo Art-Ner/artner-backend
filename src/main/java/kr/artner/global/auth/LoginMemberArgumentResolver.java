@@ -16,7 +16,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(LoginMember.class)
-                && parameter.getParameterType().equals(User.class);
+                && (parameter.getParameterType().equals(CustomUserDetails.class)
+                    || parameter.getParameterType().equals(User.class));
     }
 
     @Override
@@ -30,7 +31,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof CustomUserDetails) {
-            return ((CustomUserDetails) principal).getUser();
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
+
+            // 요청된 타입에 따라 적절한 객체 반환
+            if (parameter.getParameterType().equals(User.class)) {
+                return userDetails.getUser();
+            } else if (parameter.getParameterType().equals(CustomUserDetails.class)) {
+                return userDetails;
+            }
         }
 
         return null;
