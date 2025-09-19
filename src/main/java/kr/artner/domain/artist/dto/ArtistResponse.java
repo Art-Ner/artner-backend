@@ -29,12 +29,22 @@ public class ArtistResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateArtistProfileResponse {
+        private ArtistProfileDetail artistProfile;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ArtistProfileDetail {
         private Long id;
+        private Long user_id;
         private String artistName;
         private String headline;
         private String bio;
         private List<String> urls;
-        private String message;
+        private List<String> genres;
+        private List<String> roles;
     }
 
     @Getter
@@ -58,6 +68,14 @@ public class ArtistResponse {
     @AllArgsConstructor
     public static class ArtistListResponse {
         private List<ArtistListItem> artists;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ArtistListWithPageResponse {
+        private ArtistListResponse result;
         private kr.artner.response.PageInfo pageInfo;
     }
 }

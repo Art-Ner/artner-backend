@@ -81,6 +81,11 @@ jwt:
   access-token-validity: 604800000
   refresh-token-validity: 604800000
 
+# OpenAI Configuration
+openai:
+  api:
+    key: ${OPENAI_API_KEY:}
+
 # Logging Configuration
 logging:
   level:

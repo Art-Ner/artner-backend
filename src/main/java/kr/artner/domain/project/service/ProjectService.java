@@ -35,6 +35,7 @@ public class ProjectService {
     private final ProjectMemberRepository projectMemberRepository;
     private final UserRepository userRepository;
     private final ArtistProfileRepository artistProfileRepository;
+    private final ProjectEmbeddingService projectEmbeddingService;
 
     @Transactional
     public ProjectResponse.CreateProjectResponse createProject(ProjectRequest.CreateProjectRequest request, Long ownerId) {
@@ -46,6 +47,14 @@ public class ProjectService {
 
         Project project = ProjectConverter.toEntity(request, owner);
         Project savedProject = projectRepository.save(project);
+
+        // 프로젝트 생성 후 임베딩 자동 생성 (메모리에만 저장)
+        try {
+            projectEmbeddingService.generateAndSaveProjectEmbedding(savedProject);
+        } catch (Exception e) {
+            // 임베딩 생성 실패시 로그만 남기고 프로젝트 생성은 계속 진행
+            System.err.println("Failed to generate embedding for project " + savedProject.getId() + ": " + e.getMessage());
+        }
 
         return ProjectConverter.toCreateProjectResponse(savedProject);
     }
