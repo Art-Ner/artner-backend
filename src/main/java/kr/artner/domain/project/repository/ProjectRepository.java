@@ -18,11 +18,10 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT p FROM Project p JOIN FETCH p.owner " +
-           "WHERE (:keyword IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-           "       OR LOWER(p.concept) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+           "WHERE (:keyword IS NULL OR p.title = :keyword OR p.concept = :keyword) " +
            "AND (:status IS NULL OR p.status = :status) " +
            "AND (:genre IS NULL OR p.targetGenre = :genre) " +
-           "AND (:region IS NULL OR LOWER(p.targetRegion) LIKE LOWER(CONCAT('%', :region, '%'))) " +
+           "AND (:region IS NULL OR p.targetRegion = :region) " +
            "AND (:ownerId IS NULL OR p.owner.id = :ownerId)")
     Page<Project> findProjectsWithFilters(
             @Param("keyword") String keyword,
@@ -36,6 +35,24 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT p FROM Project p JOIN FETCH p.owner")
     List<Project> findAllProjects();
+
+    @Query("SELECT p FROM Project p WHERE p.conceptEmbedding IS NULL")
+    List<Project> findAllByConceptEmbeddingIsNull();
+
+    @Query(value = "SELECT p.*, (p.concept_embedding <=> CAST(:queryVector AS vector)) as similarity_distance " +
+           "FROM projects p " +
+           "WHERE p.concept_embedding IS NOT NULL " +
+           "ORDER BY p.concept_embedding <=> CAST(:queryVector AS vector) " +
+           "LIMIT :limit",
+           nativeQuery = true)
+    List<Object[]> findSimilarProjectsByEmbeddingWithDistance(@Param("queryVector") String queryVector, @Param("limit") int limit);
+
+    @Query(value = "SELECT * FROM projects p " +
+           "WHERE p.concept_embedding IS NOT NULL " +
+           "ORDER BY p.concept_embedding <=> CAST(:queryVector AS vector) " +
+           "LIMIT :limit",
+           nativeQuery = true)
+    List<Project> findSimilarProjectsByEmbedding(@Param("queryVector") String queryVector, @Param("limit") int limit);
 
     Page<Project> findAllByOwner(ArtistProfile owner, Pageable pageable);
     Page<Project> findAllByOwnerAndStatus(ArtistProfile owner, ProjectStatus status, Pageable pageable);

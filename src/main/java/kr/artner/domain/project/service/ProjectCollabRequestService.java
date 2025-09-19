@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -88,10 +89,10 @@ public class ProjectCollabRequestService {
         
         User ownerUser = userRepository.findById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        
+
         ArtistProfile owner = artistProfileRepository.findByUser(ownerUser)
                 .orElseThrow(() -> new IllegalArgumentException("아티스트 프로필이 존재하지 않습니다."));
-        
+
         // 요청 수락 처리
         collabRequest.acceptRequest(owner);
         
@@ -133,10 +134,10 @@ public class ProjectCollabRequestService {
         
         User ownerUser = userRepository.findById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        
+
         ArtistProfile owner = artistProfileRepository.findByUser(ownerUser)
                 .orElseThrow(() -> new IllegalArgumentException("아티스트 프로필이 존재하지 않습니다."));
-        
+
         // 요청 거절 처리
         collabRequest.rejectRequest(owner);
         

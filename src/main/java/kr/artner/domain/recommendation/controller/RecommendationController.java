@@ -23,8 +23,9 @@ public class RecommendationController {
 
     @GetMapping("/projects")
     public ApiResponse<RecommendationResponse.GetRecommendationsResponse> getRecommendedProjects(
-            @LoginMember User user) {
-        RecommendationResponse.GetRecommendationsResponse response = recommendationService.getRecommendations(user);
+            @LoginMember User user,
+            @RequestParam(required = false) Long artistProfileId) {
+        RecommendationResponse.GetRecommendationsResponse response = recommendationService.getRecommendations(user, artistProfileId);
         return ApiResponse.success(response);
     }
 }

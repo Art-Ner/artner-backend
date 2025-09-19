@@ -50,13 +50,22 @@ public class Project {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public void updateProject(String title, String concept, String targetRegion, 
+    @Column(name = "concept_embedding", columnDefinition = "vector(1536)")
+    @org.hibernate.annotations.Type(kr.artner.global.config.VectorType.class)
+    private String conceptEmbedding;
+
+    public void updateProject(String title, String concept, String targetRegion,
                               GenreCode targetGenre, String expectedScale) {
         if (title != null) this.title = title;
         if (concept != null) this.concept = concept;
         if (targetRegion != null) this.targetRegion = targetRegion;
         if (targetGenre != null) this.targetGenre = targetGenre;
         if (expectedScale != null) this.expectedScale = expectedScale;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateConceptEmbedding(String conceptEmbedding) {
+        this.conceptEmbedding = conceptEmbedding;
         this.updatedAt = LocalDateTime.now();
     }
 }
