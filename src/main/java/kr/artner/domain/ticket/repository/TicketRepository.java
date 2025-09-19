@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.UUID;
+
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
     
     // 공연별 티켓 조회 (상태 필터 포함)
@@ -18,4 +20,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     
     // 구매자별 티켓 조회
     Page<Ticket> findByBuyerOrderByPurchasedAtDesc(User buyer, Pageable pageable);
+    
+    // 중복 결제 방지를 위한 idempotency key 존재 여부 확인
+    boolean existsByIdempotencyKey(UUID idempotencyKey);
 }

@@ -80,4 +80,26 @@ public class Ticket {
         this.status = TicketStatus.CANCELLED;
         this.cancelledAt = LocalDateTime.now();
     }
+
+    public void processNaverPayment(String naverPaymentId, UUID idempotencyKey) {
+        if (this.status == TicketStatus.PAID) {
+            throw new IllegalStateException("이미 결제된 티켓입니다.");
+        }
+        if (this.status == TicketStatus.CANCELLED) {
+            throw new IllegalStateException("취소된 티켓은 결제할 수 없습니다.");
+        }
+        if (this.status == TicketStatus.REFUNDED) {
+            throw new IllegalStateException("환불된 티켓은 결제할 수 없습니다.");
+        }
+        
+        this.status = TicketStatus.PAID;
+        this.purchasedAt = LocalDateTime.now();
+        this.externalPaymentId = naverPaymentId;
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public boolean isPayable() {
+        return this.status == TicketStatus.RESERVED && 
+               this.holdExpiresAt.isAfter(LocalDateTime.now());
+    }
 }

@@ -1,6 +1,7 @@
 package kr.artner.domain.ticket.dto;
 
 import kr.artner.domain.performance.entity.Ticket;
+import kr.artner.domain.ticket.enums.TicketStatus;
 
 public class TicketConverter {
     
