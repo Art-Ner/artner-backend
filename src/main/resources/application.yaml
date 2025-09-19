@@ -86,6 +86,12 @@ openai:
   api:
     key: ${OPENAI_API_KEY:}
 
+# KOPIS Configuration
+kopis:
+  api:
+    key: ${KOPIS_API_KEY:}
+    base-url: http://kopis.or.kr/openApi/restful
+
 # Logging Configuration
 logging:
   level:
