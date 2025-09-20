@@ -27,9 +27,21 @@ public class AuthController {
     }
 
     @GetMapping("/google/callback")
-    public ApiResponse<TokenResponse.LoginResponse> googleCallback(@RequestParam String code) {
-        TokenResponse.LoginResponse loginResponse = googleOAuthService.processGoogleLogin(code);
-        return ApiResponse.success(loginResponse);
+    public ApiResponse<String> googleCallback(@RequestParam String code) {
+        try {
+            log.info("Google OAuth callback received with code: {}", code);
+            TokenResponse.LoginResponse loginResponse = googleOAuthService.processGoogleLogin(code);
+            log.info("Google OAuth login successful");
+            return ApiResponse.success("Login successful");
+        } catch (Exception e) {
+            log.error("Google OAuth callback failed", e);
+            // 임시로 오류 정보를 응답에 포함
+            String errorMessage = "Error: " + e.getClass().getSimpleName() + " - " + e.getMessage();
+            if (e.getCause() != null) {
+                errorMessage += " | Cause: " + e.getCause().getMessage();
+            }
+            return ApiResponse.failure(errorMessage);
+        }
     }
 
     // Kakao Login Endpoints

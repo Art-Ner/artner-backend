@@ -59,7 +59,7 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: "https://api.artner.kr/api/auth/google/callback"
+            redirect-uri: "${GOOGLE_REDIRECT_URI:https://api.artner.kr/api/auth/google/callback}"
             scope:
               - profile
               - email
@@ -68,7 +68,7 @@ spring:
             provider: kakao # 위에서 정의한 provider 이름을 사용
             client-id: ${KAKAO_CLIENT_ID}
             # client-secret: ${KAKAO_CLIENT_SECRET} # 카카오는 Client Secret이 필수 아님 (필요시 추가)
-            redirect-uri: "https://api.artner.kr/api/auth/kakao/callback"
+            redirect-uri: "${KAKAO_REDIRECT_URI:https://api.artner.kr/api/auth/kakao/callback"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post # 카카오 문서에 명시된 인증 방식
             scope:
@@ -99,3 +99,8 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: trace
     com.zaxxer.hikari: debug
     org.springframework.boot.autoconfigure.jdbc: debug
+    kr.artner: debug
+  file:
+    name: logs/application.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

@@ -14,6 +14,7 @@ import kr.artner.global.auth.oauth.enums.OAuthProvider; // Import OAuthProvider
 import kr.artner.global.exception.ErrorStatus;
 import kr.artner.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +29,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoogleOAuthService {
@@ -73,8 +75,10 @@ public class GoogleOAuthService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         try {
+            log.info("Requesting access token from Google with params: client_id={}, redirect_uri={}", GOOGLE_CLIENT_ID, REDIRECT_URI);
             return restTemplate.postForObject(tokenRequestUrl, request, GoogleTokenResponse.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
+            log.error("Google token request failed. Status: {}, Response: {}", e.getStatusCode(), e.getResponseBodyAsString());
             throw new GeneralException(ErrorStatus.GOOGLE_OAUTH_ERROR, e);
         }
     }
@@ -102,29 +106,42 @@ public class GoogleOAuthService {
 
 
     public TokenResponse.LoginResponse processGoogleLogin(String code) {
-        // 1. code -> accessToken 받기
-        GoogleTokenResponse tokenResponse = requestAccessToken(code);
+        try {
+            log.info("Starting Google OAuth login process with code: {}", code);
+            log.info("Using REDIRECT_URI: {}", REDIRECT_URI);
+            log.info("Using GOOGLE_CLIENT_ID: {}", GOOGLE_CLIENT_ID);
 
-        // 2. accessToken -> 유저 정보 받기
-        GoogleUserInfo userInfo = requestUserInfo(tokenResponse.getAccessToken());
+            // 1. code -> accessToken 받기
+            GoogleTokenResponse tokenResponse = requestAccessToken(code);
+            log.info("Successfully received access token from Google");
 
-        // Use userService to find or create user
-        User user = userService.findOrCreateUser(userInfo.getEmail(), userInfo.getName(), OAuthProvider.GOOGLE);
+            // 2. accessToken -> 유저 정보 받기
+            GoogleUserInfo userInfo = requestUserInfo(tokenResponse.getAccessToken());
+            log.info("Successfully received user info from Google: {}", userInfo.getEmail());
 
-        // 3. Generate application tokens
-        TokenResponse.TokenDto tokens = jwtTokenProvider.generateToken(user.getId());
+            // Use userService to find or create user
+            User user =  userService.findOrCreateUser(userInfo.getEmail(), userInfo.getName(), OAuthProvider.GOOGLE);
+            log.info("Successfully found/created user: {}", user.getEmail());
 
-        // 4. Create login response with user info
-        return TokenResponse.LoginResponse.builder()
-                .accessToken(tokens.getAccessToken())
-                .refreshToken(tokens.getRefreshToken())
-                .user(TokenResponse.LoginResponse.UserInfo.builder()
-                        .id(user.getId())
-                        .email(user.getEmail())
-                        .username(user.getUsername())
-                        .oauthProvider(user.getOauthProvider().name().toLowerCase())
-                        .build())
-                .build();
+            // 3. Generate application tokens
+            TokenResponse.TokenDto tokens = jwtTokenProvider.generateToken(user.getId());
+            log.info("Successfully generated JWT tokens for user: {}", user.getId());
+
+            // 4. Create login response with user info
+            return TokenResponse.LoginResponse.builder()
+                    .accessToken(tokens.getAccessToken())
+                    .refreshToken(tokens.getRefreshToken())
+                    .user(TokenResponse.LoginResponse.UserInfo.builder()
+                            .id(user.getId())
+                            .email(user.getEmail())
+                            .username(user.getUsername())
+                            .oauthProvider(user.getOauthProvider().name().toLowerCase())
+                            .build())
+                    .build();
+        } catch (Exception e) {
+            log.error("Error in Google OAuth login process", e);
+            throw e;
+        }
     }
 
 
