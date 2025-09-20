@@ -102,7 +102,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.warn("userId가 null 입니다.");
             }
         } catch (Exception e) {
-            log.warn("JWT 토큰 검증 실패: " + e.getMessage()); // 토큰이 유효하지 않으면 무시 (인증되지 않은 상태로 진행)
+            log.warn("JWT 토큰 검증 실패: " + e.getMessage());
+            // 토큰이 있는데 잘못된 경우 401 반환
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

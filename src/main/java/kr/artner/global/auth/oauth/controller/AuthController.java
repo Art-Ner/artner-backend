@@ -27,12 +27,12 @@ public class AuthController {
     }
 
     @GetMapping("/google/callback")
-    public ApiResponse<String> googleCallback(@RequestParam String code) {
+    public ApiResponse<TokenResponse.LoginResponse> googleCallback(@RequestParam String code) {
         try {
             log.info("Google OAuth callback received with code: {}", code);
             TokenResponse.LoginResponse loginResponse = googleOAuthService.processGoogleLogin(code);
             log.info("Google OAuth login successful");
-            return ApiResponse.success("Login successful");
+            return ApiResponse.success(loginResponse);
         } catch (Exception e) {
             log.error("Google OAuth callback failed", e);
             // 임시로 오류 정보를 응답에 포함
