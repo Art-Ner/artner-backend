@@ -19,9 +19,12 @@ pipeline {
     stage('Docker Login (GHCR)') {
       when { expression { return env.BRANCH_NAME == 'deploy' || env.GIT_BRANCH == 'origin/deploy' } }
       steps {
-        sh '''
-          echo "${GITHUB_TOKEN}" | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
-        '''
+        withCredentials([usernamePassword(credentialsId: 'ghcr_pat', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_PAT')]) {
+          sh '''
+            set -euo pipefail
+            echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+          '''
+        }
       }
     }
 
