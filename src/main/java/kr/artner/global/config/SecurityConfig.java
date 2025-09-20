@@ -40,7 +40,11 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**"
                         ).permitAll()
-                        .requestMatchers("/", "/actuator/health").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/actuator/health",
+                                "/api/ping"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
