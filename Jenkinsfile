@@ -5,38 +5,37 @@ pipeline {
 
   environment {
     IMAGE_NAME = "ghcr.io/art-ner/artner-backend"
-    COMMIT = "${env.GIT_COMMIT}"
   }
 
   stages {
     stage('Branch check') {
-      when { expression { return env.BRANCH_NAME == 'deploy' || env.GIT_BRANCH == 'origin/deploy' } }
+      when { branch 'deploy' }
       steps {
-        echo "deploy 브랜치 트리거 OK (commit: ${COMMIT})"
+        echo "deploy 브랜치 트리거 OK (commit: ${env.GIT_COMMIT})"
       }
     }
 
     stage('Docker Login (GHCR)') {
-      when { expression { return env.BRANCH_NAME == 'deploy' || env.GIT_BRANCH == 'origin/deploy' } }
+      when { branch 'deploy' }
       steps {
-        withCredentials([usernamePassword(credentialsId: 'ghcr_pat', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_PAT')]) {
-          sh '''
-            set -euo pipefail
-            echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+        withCredentials([string(credentialsId: 'ghcr_pat', variable: 'GHCR_PAT')]) {
+          sh '''#!/bin/bash
+            set -euxo pipefail
+            echo "$GHCR_PAT" | docker login ghcr.io -u ${GIT_USERNAME:-art-ner} --password-stdin
           '''
         }
       }
     }
 
     stage('Docker Build & Push') {
-      when { expression { return env.BRANCH_NAME == 'deploy' || env.GIT_BRANCH == 'origin/deploy' } }
+      when { branch 'deploy' }
+      environment {
+        COMMIT = "${env.GIT_COMMIT}"
+      }
       steps {
-        sh '''
+        sh '''#!/bin/bash
           set -euxo pipefail
-          echo "[1/3] Docker Build"
           docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${COMMIT} .
-
-          echo "[2/3] Docker Push"
           docker push ${IMAGE_NAME}:latest
           docker push ${IMAGE_NAME}:${COMMIT}
         '''
@@ -44,13 +43,13 @@ pipeline {
     }
 
     stage('Deploy (docker compose)') {
-      when { expression { return env.BRANCH_NAME == 'deploy' || env.GIT_BRANCH == 'origin/deploy' } }
+      when { branch 'deploy' }
       steps {
-        sh '''
+        sh '''#!/bin/bash
           set -euxo pipefail
           cd /srv/artner
 
-          echo "[1/2] 최신 이미지 pull"
+          echo "[1/2] app 최신 이미지 pull"
           docker compose -f docker-compose.yml pull app || true
 
           echo "[2/2] app 서비스 재기동"
@@ -64,14 +63,7 @@ pipeline {
   }
 
   post {
-    always {
-      sh 'docker logout ghcr.io || true'
-    }
-    success {
-      echo '배포 파이프라인 완료'
-    }
-    failure {
-      echo '배포 파이프라인 실패'
-    }
+    success { echo '배포 파이프라인 완료' }
+    failure { echo '배포 파이프라인 실패' }
   }
 }
