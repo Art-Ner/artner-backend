@@ -34,7 +34,7 @@ public class User extends BaseRDBEntity {
     @Column(length = 100, nullable = false)
     private String username;
 
-    @Column(length = 100, nullable = false) // Added nickname field
+    @Column(length = 100) // Added nickname field
     private String nickname;
 
     @Enumerated(EnumType.STRING)
