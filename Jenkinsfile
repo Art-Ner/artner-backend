@@ -58,7 +58,7 @@ pipeline {
 
   post {
     always  { sh 'docker logout ghcr.io || true' }
-    success { echo '배포 파이프라인 완료' }
-    failure { echo '배포 파이프라인 실패' }
+    success { echo ' 배포 파이프라인 완료' }
+    failure { echo ' 배포 파이프라인 실패' }
   }
 }
