@@ -119,8 +119,13 @@ public class GoogleOAuthService {
             GoogleUserInfo userInfo = requestUserInfo(tokenResponse.getAccessToken());
             log.info("Successfully received user info from Google: {}", userInfo.getEmail());
 
+            // Generate username with fallback if null
+            String username = userInfo.getName() != null && !userInfo.getName().trim().isEmpty()
+                    ? userInfo.getName()
+                    : generateDefaultUsername(userInfo.getEmail());
+
             // Use userService to find or create user
-            User user =  userService.findOrCreateUser(userInfo.getEmail(), userInfo.getName(), OAuthProvider.GOOGLE);
+            User user = userService.findOrCreateUser(userInfo.getEmail(), username, OAuthProvider.GOOGLE);
             log.info("Successfully found/created user: {}", user.getEmail());
 
             // 3. Generate application tokens
@@ -151,5 +156,25 @@ public class GoogleOAuthService {
 
     public void logout(String accessToken) {
         jwtTokenProvider.logout(accessToken);
+    }
+
+    private String generateDefaultUsername(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return "google_user_" + System.currentTimeMillis();
+        }
+
+        // 이메일 앞부분 추출
+        String localPart = email.split("@")[0];
+
+        // 특수문자 제거 및 길이 제한
+        String cleanUsername = localPart.replaceAll("[^a-zA-Z0-9가-힣]", "")
+                                       .substring(0, Math.min(localPart.length(), 20));
+
+        // 빈 문자열인 경우 기본값
+        if (cleanUsername.trim().isEmpty()) {
+            cleanUsername = "google_user";
+        }
+
+        return cleanUsername;
     }
 }
