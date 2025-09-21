@@ -20,7 +20,7 @@ public class AuthController {
     private final KakaoOAuthService kakaoOAuthService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @GetMapping("/google/login")
+    @PostMapping("/google/login")
     public ApiResponse<String> getGoogleLoginUrl() {
         String url = googleOAuthService.getGoogleLoginUrl();
         return ApiResponse.success(url);
@@ -45,7 +45,7 @@ public class AuthController {
     }
 
     // Kakao Login Endpoints
-    @GetMapping("/kakao/login")
+    @PostMapping("/kakao/login")
     public ApiResponse<String> getKakaoLoginUrl() {
         String url = kakaoOAuthService.getKakaoLoginUrl();
         return ApiResponse.success(url);
