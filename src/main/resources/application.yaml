@@ -79,7 +79,7 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   access-token-validity: 604800000
-  refresh-token-validity: 604800000
+  refresh-token-validity: 1209600000
 
 # OpenAI Configuration
 openai:
