@@ -9,6 +9,11 @@ import kr.artner.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import java.net.URI;
+import java.time.Duration;
 
 @Slf4j
 @RestController
@@ -27,20 +32,51 @@ public class AuthController {
     }
 
     @GetMapping("/google/callback")
-    public ApiResponse<TokenResponse.LoginResponse> googleCallback(@RequestParam String code) {
+    public ResponseEntity<Void> googleCallback(@RequestParam(required = false) String code,
+                                               @RequestParam(required = false) String state) {
         try {
-            log.info("Google OAuth callback received with code: {}", code);
-            TokenResponse.LoginResponse loginResponse = googleOAuthService.processGoogleLogin(code);
-            log.info("Google OAuth login successful");
-            return ApiResponse.success(loginResponse);
-        } catch (Exception e) {
-            log.error("Google OAuth callback failed", e);
-            // 임시로 오류 정보를 응답에 포함
-            String errorMessage = "Error: " + e.getClass().getSimpleName() + " - " + e.getMessage();
-            if (e.getCause() != null) {
-                errorMessage += " | Cause: " + e.getCause().getMessage();
+            // 0) Guard: if code is missing, bounce to front with error
+            if (code == null || code.isBlank()) {
+                URI errLocation = URI.create("https://artner.kr/auth/google/callback?status=error&reason=missing_code");
+                return ResponseEntity.status(303).location(errLocation).build();
             }
-            return ApiResponse.failure(errorMessage);
+
+            // 1) Exchange code -> tokens and upsert user
+            TokenResponse.LoginResponse loginResponse = googleOAuthService.processGoogleLogin(code);
+
+            // 2) Set HttpOnly cookies (access/refresh)
+            ResponseCookie accessCookie = ResponseCookie.from("access_token", loginResponse.getAccessToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .domain(".artner.kr")
+                    .path("/")
+                    .maxAge(Duration.ofHours(1))
+                    .build();
+
+            ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", loginResponse.getRefreshToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .domain(".artner.kr")
+                    .path("/")
+                    .maxAge(Duration.ofDays(7))
+                    .build();
+
+            // 3) Final redirect to front page route (page, not API)
+            URI successLocation = URI.create("https://artner.kr/auth/google/callback?status=success");
+
+            return ResponseEntity.status(303)
+                    .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                    .location(successLocation)
+                    .build();
+
+        } catch (Exception e) {
+            // Log and redirect to front with error flag (no sensitive info)
+            log.error("Google OAuth callback failed", e);
+            URI errLocation = URI.create("https://artner.kr/auth/google/callback?status=error");
+            return ResponseEntity.status(303).location(errLocation).build();
         }
     }
 
@@ -63,5 +99,3 @@ public class AuthController {
         return ApiResponse.success(tokens);
     }
 }
-
-    
