@@ -109,26 +109,12 @@ public class AuthController {
     }
 
     private String getBaseUrl(HttpServletRequest request) {
-        String origin = request.getHeader("Origin");
-        String referer = request.getHeader("Referer");
+        String host = request.getHeader("Host");
 
-        // First try Origin header
-        if (origin != null && !origin.isEmpty()) {
-            return origin;
+        if (host != null && host.contains("localhost")) {
+            return "http://localhost:3000";
         }
 
-        // Then try Referer header and extract base URL
-        if (referer != null && !referer.isEmpty()) {
-            try {
-                URI uri = URI.create(referer);
-                return uri.getScheme() + "://" + uri.getHost() +
-                       (uri.getPort() != -1 ? ":" + uri.getPort() : "");
-            } catch (Exception e) {
-                log.warn("Failed to parse referer URL: {}", referer);
-            }
-        }
-
-        // Fallback to production URL
         return "https://artner.kr";
     }
 
@@ -141,14 +127,9 @@ public class AuthController {
     }
 
     private boolean isSecureRequest(HttpServletRequest request) {
-        String origin = request.getHeader("Origin");
-        String referer = request.getHeader("Referer");
+        String host = request.getHeader("Host");
 
-        // Check if request is from localhost
-        if (origin != null && origin.contains("localhost")) {
-            return false;
-        }
-        if (referer != null && referer.contains("localhost")) {
+        if (host != null && host.contains("localhost")) {
             return false;
         }
 
