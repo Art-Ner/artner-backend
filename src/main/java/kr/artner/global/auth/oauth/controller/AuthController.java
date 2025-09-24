@@ -27,8 +27,9 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/google/login")
-    public ApiResponse<String> getGoogleLoginUrl() {
-        String url = googleOAuthService.getGoogleLoginUrl();
+    public ApiResponse<String> getGoogleLoginUrl(HttpServletRequest request) {
+        String clientDomain = getBaseUrl(request);
+        String url = googleOAuthService.getGoogleLoginUrl(clientDomain);
         return ApiResponse.success(url);
     }
 
@@ -37,8 +38,8 @@ public class AuthController {
                                                @RequestParam(required = false) String state,
                                                HttpServletRequest request) {
         try {
-            // Get base URL from request origin
-            String baseUrl = getBaseUrl(request);
+            // Get base URL from state parameter (passed from login request)
+            String baseUrl = (state != null && !state.isEmpty()) ? state : "https://artner.kr";
 
             // 0) Guard: if code is missing, bounce to front with error
             if (code == null || code.isBlank()) {
@@ -50,8 +51,8 @@ public class AuthController {
             TokenResponse.LoginResponse loginResponse = googleOAuthService.processGoogleLogin(code);
 
             // 2) Set HttpOnly cookies (access/refresh)
-            String cookieDomain = getCookieDomain(request);
-            boolean isSecure = isSecureRequest(request);
+            String cookieDomain = baseUrl.contains("localhost") ? null : ".artner.kr";
+            boolean isSecure = !baseUrl.contains("localhost");
 
             ResponseCookie accessCookie = ResponseCookie.from("access_token", loginResponse.getAccessToken())
                     .httpOnly(true)
@@ -83,7 +84,7 @@ public class AuthController {
         } catch (Exception e) {
             // Log and redirect to front with error flag (no sensitive info)
             log.error("Google OAuth callback failed", e);
-            String baseUrl = getBaseUrl(request);
+            String baseUrl = (state != null && !state.isEmpty()) ? state : "https://artner.kr";
             URI errLocation = URI.create(baseUrl + "/api/auth/google/callback?status=error");
             return ResponseEntity.status(303).location(errLocation).build();
         }

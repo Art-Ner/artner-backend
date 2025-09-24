@@ -59,6 +59,18 @@ public class GoogleOAuthService {
                 .build().toUriString();
     }
 
+    public String getGoogleLoginUrl(String clientDomain) {
+        System.out.println(REDIRECT_URI);
+        return UriComponentsBuilder.fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
+                .queryParam("client_id", GOOGLE_CLIENT_ID)
+                .queryParam("redirect_uri", REDIRECT_URI)
+                .queryParam("response_type", "code")
+                .queryParam("scope", "email profile")
+                .queryParam("access_type", "offline") // refreshToken 발급
+                .queryParam("state", clientDomain) // Add client domain to state
+                .build().toUriString();
+    }
+
     private GoogleTokenResponse requestAccessToken(String code) {
         String tokenRequestUrl = "https://oauth2.googleapis.com/token";
 
