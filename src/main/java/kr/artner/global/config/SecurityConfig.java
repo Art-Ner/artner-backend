@@ -27,7 +27,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -54,24 +54,25 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+    // CORS는 Nginx 리버스 프록시에서 처리함
+    // @Bean
+    // public CorsConfigurationSource corsConfigurationSource() {
+    //     var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
 
-        // 통합 CORS 설정 (모든 엔드포인트용)
-        var configuration = new org.springframework.web.cors.CorsConfiguration();
+    //     // 통합 CORS 설정 (모든 엔드포인트용)
+    //     var configuration = new org.springframework.web.cors.CorsConfiguration();
 
-        // 허용된 origin들 추가
-        for (String origin : corsProperties.getAllowedOrigins()) {
-            configuration.addAllowedOrigin(origin);
-        }
+    //     // 허용된 origin들 추가
+    //     for (String origin : corsProperties.getAllowedOrigins()) {
+    //         configuration.addAllowedOrigin(origin);
+    //     }
 
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
+    //     configuration.addAllowedMethod("*");
+    //     configuration.addAllowedHeader("*");
+    //     configuration.setAllowCredentials(true);
 
-        source.registerCorsConfiguration("/**", configuration);
+    //     source.registerCorsConfiguration("/**", configuration);
 
-        return source;
-    }
+    //     return source;
+    // }
 }
