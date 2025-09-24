@@ -14,6 +14,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import java.net.URI;
 import java.time.Duration;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -33,11 +34,15 @@ public class AuthController {
 
     @GetMapping("/google/callback")
     public ResponseEntity<Void> googleCallback(@RequestParam(required = false) String code,
-                                               @RequestParam(required = false) String state) {
+                                               @RequestParam(required = false) String state,
+                                               HttpServletRequest request) {
         try {
+            // Get base URL from request origin
+            String baseUrl = getBaseUrl(request);
+
             // 0) Guard: if code is missing, bounce to front with error
             if (code == null || code.isBlank()) {
-                URI errLocation = URI.create("https://artner.kr/auth/google/callback?status=error&reason=missing_code");
+                URI errLocation = URI.create(baseUrl + "/auth/google/callback?status=error&reason=missing_code");
                 return ResponseEntity.status(303).location(errLocation).build();
             }
 
@@ -45,26 +50,29 @@ public class AuthController {
             TokenResponse.LoginResponse loginResponse = googleOAuthService.processGoogleLogin(code);
 
             // 2) Set HttpOnly cookies (access/refresh)
+            String cookieDomain = getCookieDomain(request);
+            boolean isSecure = isSecureRequest(request);
+
             ResponseCookie accessCookie = ResponseCookie.from("access_token", loginResponse.getAccessToken())
                     .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    .domain(".artner.kr")
+                    .secure(isSecure)
+                    .sameSite(isSecure ? "None" : "Lax")
+                    .domain(cookieDomain)
                     .path("/")
                     .maxAge(Duration.ofHours(1))
                     .build();
 
             ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", loginResponse.getRefreshToken())
                     .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    .domain(".artner.kr")
+                    .secure(isSecure)
+                    .sameSite(isSecure ? "None" : "Lax")
+                    .domain(cookieDomain)
                     .path("/")
                     .maxAge(Duration.ofDays(7))
                     .build();
 
             // 3) Final redirect to front page route (page, not API)
-            URI successLocation = URI.create("https://artner.kr/api/auth/google/callback?status=success");
+            URI successLocation = URI.create(baseUrl + "/api/auth/google/callback?status=success");
 
             return ResponseEntity.status(303)
                     .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
@@ -75,7 +83,8 @@ public class AuthController {
         } catch (Exception e) {
             // Log and redirect to front with error flag (no sensitive info)
             log.error("Google OAuth callback failed", e);
-            URI errLocation = URI.create("https://artner.kr/api/auth/google/callback?status=error");
+            String baseUrl = getBaseUrl(request);
+            URI errLocation = URI.create(baseUrl + "/api/auth/google/callback?status=error");
             return ResponseEntity.status(303).location(errLocation).build();
         }
     }
@@ -97,5 +106,52 @@ public class AuthController {
     public ApiResponse<TokenResponse.TokenDto> reissueToken(@RequestBody TokenReissueRequest request) {
         TokenResponse.TokenDto tokens = jwtTokenProvider.reissue(request.getRefreshToken());
         return ApiResponse.success(tokens);
+    }
+
+    private String getBaseUrl(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        String referer = request.getHeader("Referer");
+
+        // First try Origin header
+        if (origin != null && !origin.isEmpty()) {
+            return origin;
+        }
+
+        // Then try Referer header and extract base URL
+        if (referer != null && !referer.isEmpty()) {
+            try {
+                URI uri = URI.create(referer);
+                return uri.getScheme() + "://" + uri.getHost() +
+                       (uri.getPort() != -1 ? ":" + uri.getPort() : "");
+            } catch (Exception e) {
+                log.warn("Failed to parse referer URL: {}", referer);
+            }
+        }
+
+        // Fallback to production URL
+        return "https://artner.kr";
+    }
+
+    private String getCookieDomain(HttpServletRequest request) {
+        String host = request.getHeader("Host");
+        if (host != null && host.contains("localhost")) {
+            return null; // Don't set domain for localhost
+        }
+        return ".artner.kr"; // Production domain
+    }
+
+    private boolean isSecureRequest(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        String referer = request.getHeader("Referer");
+
+        // Check if request is from localhost
+        if (origin != null && origin.contains("localhost")) {
+            return false;
+        }
+        if (referer != null && referer.contains("localhost")) {
+            return false;
+        }
+
+        return true; // Default to secure for production
     }
 }
