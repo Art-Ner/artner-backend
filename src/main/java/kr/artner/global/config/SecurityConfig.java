@@ -58,57 +58,20 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
 
-        // WebSocket 엔드포인트용 CORS 설정 (credentials 허용)
-        var wsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-        wsConfiguration.addAllowedOriginPattern("*");
-        wsConfiguration.addAllowedMethod("*");
-        wsConfiguration.addAllowedHeader("*");
-        wsConfiguration.setAllowCredentials(true);
-        source.registerCorsConfiguration("/ws/**", wsConfiguration);
+        // 통합 CORS 설정 (모든 엔드포인트용)
+        var configuration = new org.springframework.web.cors.CorsConfiguration();
 
-        // 일반 API용 CORS 설정
-        var apiConfiguration = new org.springframework.web.cors.CorsConfiguration();
-
-        boolean hasNullOrigin = corsProperties.getAllowedOrigins().contains("null");
-
-        if (hasNullOrigin) {
-            // null origin이 포함된 경우, 모든 origin을 허용
-            apiConfiguration.addAllowedOriginPattern("*");
-        } else {
-            // 특정 origin들만 허용
-            for (String origin : corsProperties.getAllowedOrigins()) {
-                apiConfiguration.addAllowedOrigin(origin);
-            }
+        // 허용된 origin들 추가
+        for (String origin : corsProperties.getAllowedOrigins()) {
+            configuration.addAllowedOrigin(origin);
         }
 
-        apiConfiguration.addAllowedMethod("*");
-        apiConfiguration.addAllowedHeader("*");
-        apiConfiguration.setAllowCredentials(!hasNullOrigin);
-        source.registerCorsConfiguration("/**", apiConfiguration);
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
-
-    // @Bean
-    // public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-    //     var configuration = new org.springframework.web.cors.CorsConfiguration();
-        
-    //     // 환경변수에서 허용된 오리진 읽어와서 추가
-    //     String[] origins = allowedOrigins.split(",");
-    //     for (String origin : origins) {
-    //         configuration.addAllowedOrigin(origin.trim());
-    //     }
-        
-    //     // 기본 프로덕션 도메인 추가
-    //     configuration.addAllowedOrigin("https://artner.kr");
-    //     configuration.addAllowedOriginPattern("https://*.artner.kr");
-        
-    //     configuration.addAllowedMethod("*");
-    //     configuration.addAllowedHeader("*");
-    //     configuration.setAllowCredentials(true);
-
-    //     var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-    //     source.registerCorsConfiguration("/**", configuration);
-    //     return source;
-    // }
 }
