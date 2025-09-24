@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.security.config.Customizer;
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +28,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -54,25 +55,31 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // CORS는 Nginx 리버스 프록시에서 처리함
-    // @Bean
-    // public CorsConfigurationSource corsConfigurationSource() {
-    //     var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
 
-    //     // 통합 CORS 설정 (모든 엔드포인트용)
-    //     var configuration = new org.springframework.web.cors.CorsConfiguration();
+        var configuration = new org.springframework.web.cors.CorsConfiguration();
 
-    //     // 허용된 origin들 추가
-    //     for (String origin : corsProperties.getAllowedOrigins()) {
-    //         configuration.addAllowedOrigin(origin);
-    //     }
+        // 정확한 Origin만 허용 (credentials=true 이므로 * 사용 금지)
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("https://artner.kr");
+        configuration.addAllowedOrigin("https://www.artner.kr");
 
-    //     configuration.addAllowedMethod("*");
-    //     configuration.addAllowedHeader("*");
-    //     configuration.setAllowCredentials(true);
+        // 메서드/헤더
+        configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("POST");
+        configuration.addAllowedMethod("PUT");
+        configuration.addAllowedMethod("PATCH");
+        configuration.addAllowedMethod("DELETE");
+        configuration.addAllowedMethod("OPTIONS");
 
-    //     source.registerCorsConfiguration("/**", configuration);
+        configuration.addAllowedHeader("*"); // 필요한 경우 구체화 가능
+        configuration.setAllowCredentials(true);
 
-    //     return source;
-    // }
+        // 모든 경로에 적용
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
 }
