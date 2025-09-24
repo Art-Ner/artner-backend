@@ -64,7 +64,7 @@ public class AuthController {
                     .build();
 
             // 3) Final redirect to front page route (page, not API)
-            URI successLocation = URI.create("https://artner.kr/auth/google/callback?status=success");
+            URI successLocation = URI.create("https://artner.kr/api/auth/google/callback?status=success");
 
             return ResponseEntity.status(303)
                     .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
@@ -75,7 +75,7 @@ public class AuthController {
         } catch (Exception e) {
             // Log and redirect to front with error flag (no sensitive info)
             log.error("Google OAuth callback failed", e);
-            URI errLocation = URI.create("https://artner.kr/auth/google/callback?status=error");
+            URI errLocation = URI.create("https://artner.kr/api/auth/google/callback?status=error");
             return ResponseEntity.status(303).location(errLocation).build();
         }
     }

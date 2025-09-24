@@ -68,17 +68,21 @@ public class SecurityConfig {
 
         // 일반 API용 CORS 설정
         var apiConfiguration = new org.springframework.web.cors.CorsConfiguration();
-        for (String origin : corsProperties.getAllowedOrigins()) {
-            if ("null".equals(origin)) {
-                apiConfiguration.addAllowedOriginPattern("*");
-            } else {
+
+        boolean hasNullOrigin = corsProperties.getAllowedOrigins().contains("null");
+
+        if (hasNullOrigin) {
+            // null origin이 포함된 경우, 모든 origin을 허용
+            apiConfiguration.addAllowedOriginPattern("*");
+        } else {
+            // 특정 origin들만 허용
+            for (String origin : corsProperties.getAllowedOrigins()) {
                 apiConfiguration.addAllowedOrigin(origin);
             }
         }
+
         apiConfiguration.addAllowedMethod("*");
         apiConfiguration.addAllowedHeader("*");
-
-        boolean hasNullOrigin = corsProperties.getAllowedOrigins().contains("null");
         apiConfiguration.setAllowCredentials(!hasNullOrigin);
         source.registerCorsConfiguration("/**", apiConfiguration);
 
