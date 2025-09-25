@@ -1,13 +1,3 @@
--- 기존 더미 데이터 모두 삭제 (외래키 제약조건 때문에 순서 중요)
-DELETE FROM project_members;
-DELETE FROM projects;
-DELETE FROM concert_history;
-DELETE FROM filmography;
-DELETE FROM artist_role;
-DELETE FROM artist_genre;
-DELETE FROM artist_profile;
-DELETE FROM users;
-
 -- 더미 데이터: users (30명 추가)
 -- oauth_provider_type: 'KAKAO', 'GOOGLE'
 -- user_role: 'USER', 'ADMIN'
@@ -49,32 +39,33 @@ INSERT INTO users (email, phone, oauth_provider, username, nickname, role, creat
 -- 관리자 (29-30)
 ('adminsystem@artner.kr', '010-9000-0001', 'GOOGLE', '시스템관리자', 'ArtnerAdmin', 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 ('adminsupport@artner.kr', '010-9000-0002', 'KAKAO', '고객지원팀', 'ArtnerSupport', 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-ON CONFLICT (oauth_provider, email) DO NOTHING;
+ON CONFLICT (username, nickname) DO NOTHING;
+
 -- 더미 데이터: artist_profile (아티스트 20명)
 -- 장르: CLASSICAL, POP, ROCK, BLACK_MUSIC, JAZZ_BLUES, FOLK_COUNTRY, ELECTRONIC, WORLD_MUSIC, ETC
 -- 역할: VOCAL, KEYBOARD, GUITAR, PERCUSSION, STRING, WIND, ETC
 INSERT INTO artist_profile (user_id, artist_name, profile_image_url, headline, bio, urls) VALUES
-(1, '성진', NULL, '밴드 보컬/기타리스트', '밴드에서 보컬과 기타를 담당하고 있습니다. 록 음악에 대한 열정으로 무대를 불태웁니다.', ARRAY['https://instagram.com/sungjin_band', 'https://youtube.com/@sungjin_music']),
-(2, '이성호', NULL, '록 기타리스트', '20년 경력의 세션 기타리스트입니다. 록, 메탈, 블루스 모두 가능합니다.', ARRAY['https://instagram.com/rockstar_sam', 'https://soundcloud.com/sungho-guitar']),
-(3, '박유나', NULL, '클래식 바이올리니스트', '서울예고 출신 바이올리니스트입니다. 클래식부터 크로스오버까지 다양한 레퍼토리를 소화합니다.', ARRAY['https://instagram.com/violin_queen', 'https://youtube.com/@yuna_violin']),
-(4, '최민호', NULL, '록/재즈 드러머', '록과 재즈를 넘나드는 드럼 연주가 가능합니다. 펑크와 퓨전 장르에 강점이 있습니다.', ARRAY['https://instagram.com/beatmaker_minho', 'https://youtube.com/@minho_drums']),
-(5, '정소라', NULL, '재즈 보컬리스트', '뉴욕에서 재즈 보컬을 전공했습니다. 따뜻하고 감성적인 목소리가 특징입니다.', ARRAY['https://instagram.com/soulvoice_sora', 'https://spotify.com/artist/sora']),
-(6, '강현우', NULL, '재즈/R&B 베이시스트', '재즈와 R&B를 넘나드는 베이스 연주자입니다. 그루브감 있는 연주가 강점입니다.', ARRAY['https://instagram.com/groovemaster_hw', 'https://youtube.com/@hyunwoo_bass']),
-(7, '송민지', NULL, '클래식/팝 첼리스트', '첼로의 깊은 울림으로 감동을 전하는 연주자입니다. 클래식과 팝을 넘나듭니다.', ARRAY['https://instagram.com/cello_lover', 'https://youtube.com/@minji_cello']),
-(8, '한지원', NULL, '일렉트로닉 뮤직 프로듀서', '일렉트로닉 음악 전문 프로듀서입니다. 클럽 음악부터 앰비언트까지 제작 가능합니다.', ARRAY['https://instagram.com/electronic_jw', 'https://soundcloud.com/jiwon-edm']),
-(9, '윤서준', NULL, '재즈 트럼펫 연주자', '부드러운 트럼펫 선율이 매력적인 재즈 뮤지션입니다.', ARRAY['https://instagram.com/trumpet_man', 'https://youtube.com/@seojun_trumpet']),
-(10, '임채영', NULL, '클래식 플루티스트', '국립교향악단 출신 플루트 연주자입니다. 맑고 청아한 소리가 특징입니다.', ARRAY['https://instagram.com/flute_girl', 'https://youtube.com/@chaeyoung_flute']),
-(11, '오태양', NULL, '힙합 보컬리스트', '한국 힙합씬에서 활동 중인 래퍼입니다. 가사 작성과 편곡도 가능합니다.', ARRAY['https://instagram.com/hiphop_holic', 'https://soundcloud.com/taeyang-rap']),
-(12, '신예린', NULL, '팝 보컬리스트', 'K-POP과 팝 발라드를 주로 부르는 보컬리스트입니다. 폭넓은 음역대가 강점입니다.', ARRAY['https://instagram.com/pop_diva', 'https://youtube.com/@yerin_official']),
-(13, '배지훈', NULL, '팝/일렉트로닉 프로듀서', '팝과 일렉트로닉 장르의 작곡과 편곡을 전문으로 하는 프로듀서입니다.', ARRAY['https://instagram.com/composer_jh', 'https://soundcloud.com/jihoon-music']),
-(14, '권나리', NULL, '클래식 하프 연주자', '오케스트라와 솔로 활동을 병행하는 하피스트입니다. 천상의 소리를 들려드립니다.', ARRAY['https://instagram.com/harp_angel', 'https://youtube.com/@nari_harp']),
-(15, '전민수', NULL, '재즈 색소폰 연주자', '재즈와 블루스 색소폰 연주자입니다. 감성적인 연주가 특징입니다.', ARRAY['https://instagram.com/sax_blues', 'https://youtube.com/@minsu_sax']),
-(16, '문하영', NULL, '클래식 비올라 연주자', '실내악과 오케스트라 활동을 주로 하는 비올라 연주자입니다.', ARRAY['https://instagram.com/viola_girl', 'https://youtube.com/@hayoung_viola']),
-(17, '안동원', NULL, '펑크 록 기타리스트', '에너지 넘치는 펑크 록 연주가 특기인 기타리스트입니다.', ARRAY['https://instagram.com/punk_rocker', 'https://soundcloud.com/dongwon-rock']),
-(18, '서지수', NULL, '컨트리 싱어송라이터', '어쿠스틱 기타와 함께하는 컨트리 음악을 만듭니다.', ARRAY['https://instagram.com/country_song', 'https://youtube.com/@jisu_country']),
-(19, '남유빈', NULL, '월드뮤직 타악기 연주자', '다양한 타악기를 다루는 퍼커션 전문 연주자입니다. 월드뮤직에 특화되어 있습니다.', ARRAY['https://instagram.com/percussion_king', 'https://youtube.com/@yubin_percussion']),
-(20, '홍상현', NULL, '록 일렉트릭 기타리스트', '록과 메탈을 주로 연주하는 기타리스트입니다. 화려한 테크닉이 특징입니다.', ARRAY['https://instagram.com/elec_guitar', 'https://youtube.com/@sanghyun_guitar'])
-ON CONFLICT DO NOTHING;
+(1, '성진', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/sungjin.jpg', '밴드 보컬/기타리스트', '밴드에서 보컬과 기타를 담당하고 있습니다. 록 음악에 대한 열정으로 무대를 불태웁니다.', ARRAY['https://instagram.com/sungjin_band', 'https://youtube.com/@sungjin_music']),
+(2, '이성호', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/sungho.jpg', '록 기타리스트', '20년 경력의 세션 기타리스트입니다. 록, 메탈, 블루스 모두 가능합니다.', ARRAY['https://instagram.com/rockstar_sam', 'https://soundcloud.com/sungho-guitar']),
+(3, '박유나', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/yuna.jpg', '클래식 바이올리니스트', '서울예고 출신 바이올리니스트입니다. 클래식부터 크로스오버까지 다양한 레퍼토리를 소화합니다.', ARRAY['https://instagram.com/violin_queen', 'https://youtube.com/@yuna_violin']),
+(4, '최민호', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/minho.jpg', '록/재즈 드러머', '록과 재즈를 넘나드는 드럼 연주가 가능합니다. 펑크와 퓨전 장르에 강점이 있습니다.', ARRAY['https://instagram.com/beatmaker_minho', 'https://youtube.com/@minho_drums']),
+(5, '정소라', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/sora.jpg', '재즈 보컬리스트', '뉴욕에서 재즈 보컬을 전공했습니다. 따뜻하고 감성적인 목소리가 특징입니다.', ARRAY['https://instagram.com/soulvoice_sora', 'https://spotify.com/artist/sora']),
+(6, '강현우', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/hyunwoo.jpg', '재즈/R&B 베이시스트', '재즈와 R&B를 넘나드는 베이스 연주자입니다. 그루브감 있는 연주가 강점입니다.', ARRAY['https://instagram.com/groovemaster_hw', 'https://youtube.com/@hyunwoo_bass']),
+(7, '송민지', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/minji.jpg', '클래식/팝 첼리스트', '첼로의 깊은 울림으로 감동을 전하는 연주자입니다. 클래식과 팝을 넘나듭니다.', ARRAY['https://instagram.com/cello_lover', 'https://youtube.com/@minji_cello']),
+(8, '한지원', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/jiwon.jpg', '일렉트로닉 뮤직 프로듀서', '일렉트로닉 음악 전문 프로듀서입니다. 클럽 음악부터 앰비언트까지 제작 가능합니다.', ARRAY['https://instagram.com/electronic_jw', 'https://soundcloud.com/jiwon-edm']),
+(9, '윤서준', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/seojun.jpg', '재즈 트럼펫 연주자', '부드러운 트럼펫 선율이 매력적인 재즈 뮤지션입니다.', ARRAY['https://instagram.com/trumpet_man', 'https://youtube.com/@seojun_trumpet']),
+(10, '임채영', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/chaeyoung.jpg', '클래식 플루티스트', '국립교향악단 출신 플루트 연주자입니다. 맑고 청아한 소리가 특징입니다.', ARRAY['https://instagram.com/flute_girl', 'https://youtube.com/@chaeyoung_flute']),
+(11, '오태양', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/taeyang.jpg', '힙합 보컬리스트', '한국 힙합씬에서 활동 중인 래퍼입니다. 가사 작성과 편곡도 가능합니다.', ARRAY['https://instagram.com/hiphop_holic', 'https://soundcloud.com/taeyang-rap']),
+(12, '신예린', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/yerin.jpg', '팝 보컬리스트', 'K-POP과 팝 발라드를 주로 부르는 보컬리스트입니다. 폭넓은 음역대가 강점입니다.', ARRAY['https://instagram.com/pop_diva', 'https://youtube.com/@yerin_official']),
+(13, '배지훈', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/jihoon.jpg', '팝/일렉트로닉 프로듀서', '팝과 일렉트로닉 장르의 작곡과 편곡을 전문으로 하는 프로듀서입니다.', ARRAY['https://instagram.com/composer_jh', 'https://soundcloud.com/jihoon-music']),
+(14, '권나리', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/nari.jpg', '클래식 하프 연주자', '오케스트라와 솔로 활동을 병행하는 하피스트입니다. 천상의 소리를 들려드립니다.', ARRAY['https://instagram.com/harp_angel', 'https://youtube.com/@nari_harp']),
+(15, '전민수', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/minsu.jpg', '재즈 색소폰 연주자', '재즈와 블루스 색소폰 연주자입니다. 감성적인 연주가 특징입니다.', ARRAY['https://instagram.com/sax_blues', 'https://youtube.com/@minsu_sax']),
+(16, '문하영', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/hayoung.jpg', '클래식 비올라 연주자', '실내악과 오케스트라 활동을 주로 하는 비올라 연주자입니다.', ARRAY['https://instagram.com/viola_girl', 'https://youtube.com/@hayoung_viola']),
+(17, '안동원', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/dongwon.jpg', '펑크 록 기타리스트', '에너지 넘치는 펑크 록 연주가 특기인 기타리스트입니다.', ARRAY['https://instagram.com/punk_rocker', 'https://soundcloud.com/dongwon-rock']),
+(18, '서지수', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/jisu.jpg', '컨트리 싱어송라이터', '어쿠스틱 기타와 함께하는 컨트리 음악을 만듭니다.', ARRAY['https://instagram.com/country_song', 'https://youtube.com/@jisu_country']),
+(19, '남유빈', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/yubin.jpg', '월드뮤직 타악기 연주자', '다양한 타악기를 다루는 퍼커션 전문 연주자입니다. 월드뮤직에 특화되어 있습니다.', ARRAY['https://instagram.com/percussion_king', 'https://youtube.com/@yubin_percussion']),
+(20, '홍상현', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/profiles/sanghyun.jpg', '록 일렉트릭 기타리스트', '록과 메탈을 주로 연주하는 기타리스트입니다. 화려한 테크닉이 특징입니다.', ARRAY['https://instagram.com/elec_guitar', 'https://youtube.com/@sanghyun_guitar'])
+ON CONFLICT (user_id) DO NOTHING;
 
 -- 더미 데이터: artist_genre
 INSERT INTO artist_genre (artist_profile_id, genre_code) VALUES
@@ -83,7 +74,7 @@ INSERT INTO artist_genre (artist_profile_id, genre_code) VALUES
 (8, 'ELECTRONIC'), (9, 'JAZZ_BLUES'), (10, 'CLASSICAL'), (11, 'BLACK_MUSIC'), (12, 'POP'),
 (13, 'POP'), (13, 'ELECTRONIC'), (14, 'CLASSICAL'), (15, 'JAZZ_BLUES'), (16, 'CLASSICAL'),
 (17, 'ROCK'), (18, 'FOLK_COUNTRY'), (19, 'WORLD_MUSIC'), (20, 'ROCK')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (artist_profile_id, genre_code) DO NOTHING;
 
 -- 더미 데이터: artist_role
 INSERT INTO artist_role (artist_profile_id, role_code) VALUES
@@ -92,40 +83,36 @@ INSERT INTO artist_role (artist_profile_id, role_code) VALUES
 (10, 'WIND'), (11, 'VOCAL'), (12, 'VOCAL'), (13, 'KEYBOARD'), (13, 'ETC'),
 (14, 'STRING'), (15, 'WIND'), (16, 'STRING'), (17, 'GUITAR'), (18, 'VOCAL'),
 (18, 'GUITAR'), (19, 'PERCUSSION'), (20, 'GUITAR')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (artist_profile_id, role_code) DO NOTHING;
 
 -- 더미 데이터: filmography (성진 - DAY6 앨범)
 INSERT INTO filmography (artist_profile_id, title, description, released_at, media_url) VALUES
-(1, 'The Day', 'DAY6 데뷔 EP 앨범', '2015-09-07', NULL),
-(1, 'Daydream', '1st 미니 앨범', '2016-03-30', NULL),
-(1, 'Sunrise', '1st 정규 앨범 - Every DAY6 프로젝트', '2017-06-07', NULL),
-(1, 'Moonrise', '2nd 정규 앨범 - Every DAY6 프로젝트', '2017-12-06', NULL),
-(1, 'Shoot Me : Youth Part 1', '3rd 미니 앨범', '2018-06-26', NULL),
-(1, 'Remember Us : Youth Part 2', '4th 미니 앨범', '2018-12-10', NULL),
-(1, 'The Book of Us : Gravity', '5th 미니 앨범', '2019-07-15', NULL),
-(1, 'The Book of Us : Entropy', '6th 미니 앨범', '2019-10-22', NULL),
-(1, 'The Book of Us : The Demon', '3rd 정규 앨범', '2020-05-11', NULL),
-(1, 'The Book of Us : Negentropy - Chaos swallowed up in love', '7th 미니 앨범', '2021-04-19', NULL),
-(1, 'Fourever', '8th 미니 앨범', '2024-03-18', NULL),
-(1, 'Band Aid', '9th 미니 앨범', '2024-09-02', NULL),
-(1, 'The Decade', '4th 정규 앨범 - 10주년 기념', '2025-09-05', NULL)
-ON CONFLICT DO NOTHING;
+(1, 'The Day', 'DAY6 데뷔 EP 앨범', '2015-09-07', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/the_day.jpg'),
+(1, 'Daydream', '1st 미니 앨범', '2016-03-30', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/daydream.jpg'),
+(1, 'Sunrise', '1st 정규 앨범 - Every DAY6 프로젝트', '2017-06-07', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/sunrise.jpg'),
+(1, 'Moonrise', '2nd 정규 앨범 - Every DAY6 프로젝트', '2017-12-06', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/moonrise.jpg'),
+(1, 'Shoot Me : Youth Part 1', '3rd 미니 앨범', '2018-06-26', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/shoot_me.jpg'),
+(1, 'Remember Us : Youth Part 2', '4th 미니 앨범', '2018-12-10', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/remember_us.jpg'),
+(1, 'The Book of Us : Gravity', '5th 미니 앨범', '2019-07-15', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/gravity.jpg'),
+(1, 'The Book of Us : Entropy', '6th 미니 앨범', '2019-10-22', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/entropy.jpg'),
+(1, 'The Book of Us : The Demon', '3rd 정규 앨범', '2020-05-11', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/the_demon.jpg'),
+(1, 'The Book of Us : Negentropy - Chaos swallowed up in love', '7th 미니 앨범', '2021-04-19', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/negentropy.jpg'),
+(1, 'Fourever', '8th 미니 앨범', '2024-03-18', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/fourever.jpg'),
+(1, 'Band Aid', '9th 미니 앨범', '2024-09-02', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/band_aid.jpg'),
+(1, 'The Decade', '4th 정규 앨범 - 10주년 기념', '2025-09-05', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/albums/the_decade.jpg')
+ON CONFLICT (artist_profile_id, title) DO NOTHING;
 
 -- 더미 데이터: concert_history (성진 - DAY6 주요 투어)
 INSERT INTO concert_history (artist_profile_id, work_title, role_code, started_on, ended_on, proof_url) VALUES
-(1, 'DAY6 1st Concert "D-Day"', ARRAY['VOCAL', 'GUITAR'], '2017-02-24', '2017-02-26', NULL),
-(1, 'DAY6 Youth Tour', ARRAY['VOCAL', 'GUITAR'], '2018-07-01', '2018-12-31', NULL),
-(1, 'DAY6 Gravity Tour', ARRAY['VOCAL', 'GUITAR'], '2019-08-01', '2019-12-31', NULL),
-(1, 'DAY6 1st World Tour "Youth"', ARRAY['VOCAL', 'GUITAR'], '2019-01-01', '2019-06-30', NULL),
-(1, 'DAY6 "The Book of Us" Concert', ARRAY['VOCAL', 'GUITAR'], '2020-01-10', '2020-01-12', NULL),
-(1, 'DAY6 2nd World Tour "Right Through Me"', ARRAY['VOCAL', 'GUITAR'], '2022-06-01', '2022-12-31', NULL),
-(1, 'DAY6 3rd World Tour "Forever Young"', ARRAY['VOCAL', 'GUITAR'], '2024-09-20', '2025-05-18', NULL),
-(1, 'DAY6 10th Anniversary Tour "The Decade"', ARRAY['VOCAL', 'GUITAR'], '2025-08-30', '2026-12-31', NULL)
-ON CONFLICT DO NOTHING;
-
--- 기존 프로젝트 관련 데이터 삭제 (외래키 제약조건 때문에 순서 중요)
-DELETE FROM project_members;
-DELETE FROM projects;
+(1, 'DAY6 1st Concert "D-Day"', ARRAY['VOCAL', 'GUITAR'], '2017-02-24', '2017-02-26', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/concerts/1st_Dday.jpg'),
+(1, 'DAY6 Youth Tour', ARRAY['VOCAL', 'GUITAR'], '2018-07-01', '2018-12-31', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/concerts/youth_tour.jpg'),
+(1, 'DAY6 Gravity Tour', ARRAY['VOCAL', 'GUITAR'], '2019-08-01', '2019-12-31', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/concerts/gravity_tour.jpg'),
+(1, 'DAY6 1st World Tour "Youth"', ARRAY['VOCAL', 'GUITAR'], '2019-01-01', '2019-06-30', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/concerts/worldtour_youth.jpg'),
+(1, 'DAY6 "The Book of Us" Concert', ARRAY['VOCAL', 'GUITAR'], '2020-01-10', '2020-01-12', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/concerts/the_book_of.jpg'),
+(1, 'DAY6 2nd World Tour "Right Through Me"', ARRAY['VOCAL', 'GUITAR'], '2022-06-01', '2022-12-31', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/concerts/2nd_righr_through.jpg'),
+(1, 'DAY6 3rd World Tour "Forever Young"', ARRAY['VOCAL', 'GUITAR'], '2024-09-20', '2025-05-18', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/concerts/3rd_forever_young.jpg'),
+(1, 'DAY6 10th Anniversary Tour "The Decade"', ARRAY['VOCAL', 'GUITAR'], '2025-08-30', '2026-12-31', 'https://artner-koolpis.s3.ap-northeast-2.amazonaws.com/concerts/10th_anniversary_decade.webp')
+ON CONFLICT (artist_profile_id, work_title) DO NOTHING;
 
 -- 더미 데이터: projects (1회성 공연 모집 프로젝트 15개)
 INSERT INTO projects (owner_id, title, concept, target_region, target_genre, expected_scale, status, created_at, updated_at) VALUES
@@ -161,7 +148,7 @@ INSERT INTO projects (owner_id, title, concept, target_region, target_genre, exp
 (19, '종로 전통공연장 월드뮤직', '12월 1일 종로 전통공연장에서 진행된 한국 전통악기와 세계 타악기의 융합 공연입니다. 문화적 경계를 넘나드는 90분 공연으로 마무리했습니다.', '서울 종로구', 'WORLD_MUSIC', '중극장 (200-300석)', 'CLOSED', CURRENT_TIMESTAMP - INTERVAL '4 weeks', CURRENT_TIMESTAMP - INTERVAL '1 week'),
 
 (17, '상수동 클럽 펑크 록 공연', '11월 20일 상수동 클럽에서 진행된 펑크 록 공연입니다. 고에너지 공연으로 젊은 관객들과 뜨거운 호응을 나눴습니다. 3시간 공연으로 성황리에 마쳤습니다.', '서울 마포구', 'ROCK', '소극장 (150-250석)', 'CLOSED', CURRENT_TIMESTAMP - INTERVAL '5 weeks', CURRENT_TIMESTAMP - INTERVAL '10 days')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (owner_id, title) DO NOTHING;
 
 -- 더미 데이터: project_members (1회성 공연 참여 멤버들)
 INSERT INTO project_members (project_id, artist_id, joined_at) VALUES
@@ -206,4 +193,126 @@ INSERT INTO project_members (project_id, artist_id, joined_at) VALUES
 -- 프로젝트 9 (홍익대 앞 버스킹) - 지훈(키보드/프로듀서) + 예린(보컬)
 (9, 13, CURRENT_TIMESTAMP - INTERVAL '1 week'), -- owner
 (9, 12, CURRENT_TIMESTAMP - INTERVAL '5 days')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (project_id, artist_id) DO NOTHING;
+
+
+-- 더미 데이터: venue_admin_profile (공연장 운영자 5명)
+INSERT INTO venue_admin_profile (user_id, business_reg_number, description) VALUES
+(21, '123-45-67890', '서울 최고의 재즈 클럽입니다. 정통 재즈부터 모던 재즈까지 다양한 공연을 개최합니다.'),
+(22, '234-56-78901', '홍대 대표 라이브 재즈 클럽으로 젊은 재즈 뮤지션들의 무대입니다.'),
+(23, '345-67-89012', '락 음악 전문 공연장으로 에너지 넘치는 록 공연을 선보입니다.'),
+(24, '456-78-90123', '클래식 음악 전용 콘서트홀로 우수한 음향 시설을 자랑합니다.'),
+(25, '567-89-01234', '신진 인디 뮤지션들을 위한 소규모 라이브 공연장입니다.')
+ON CONFLICT (user_id) DO NOTHING;
+
+-- 더미 데이터: venues (공연장 108개)
+INSERT INTO venues (admin_profile_id, name, region, province_code, district_code, address, image_url, seat_capacity, base_rental_fee, facility_type, description, kopis_venue_id, source) VALUES
+(1, '수성아트피아 (용지홀)', '대구광역시 수성구', NULL, NULL, '대구광역시 수성구 무학로 180(지산동)', NULL, 1159, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(1, '수성아트피아 (무학홀)', '대구광역시 수성구', NULL, NULL, '대구광역시 수성구 무학로 180(지산동)', NULL, 301, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(1, '대구메트로아트센터', '대구광역시 수성구', NULL, NULL, '대구광역시 수성구 달구벌대로 2950 대공원역 지하2층', NULL, 202, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(1, '아트센터 달', '대구광역시 수성구', NULL, NULL, '대구광역시 수성구 천을로 173, 6층(매호동)', NULL, 209, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(1, '공간울림 연주홀', '대구광역시 수성구', NULL, NULL, '대구광역시 수성구 범안로64길 18-9(삼덕동)', NULL, 120, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(1, '공간울림 야외공연장', '대구광역시 수성구', NULL, NULL, '대구광역시 수성구 범안로64길 18-9(삼덕동)', NULL, 120, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(1, '소담아트홀', '대구광역시 수성구', NULL, NULL, '대구광역시 수성구 청수로38길 56, 2층', NULL, 60, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(1, '대구생활문화센터 어울림홀', '대구광역시 수성구', NULL, NULL, '대구광역시 수성구 만촌로 153', NULL, 80, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(1, '해남문화예술회관', '전라남도 해남군', '전라남도', NULL, '해남읍 군청길 4', NULL, 700, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(1, '승달문화예술회관 대공연장', '전라남도 강진군', '전라남도', NULL, '창포로 8', NULL, 502, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(1, '영광예술의전당', '전라남도 영광군', '전라남도', NULL, '영광읍 천년로 13길 2-34', NULL, 579, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(1, '장성문화예술회관 소공연장', '전라남도 장성군', '전라남도', NULL, '장성읍 문화로 110', NULL, 199, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(1, '장성문화예술회관 대공연장', '전라남도 장성군', '전라남도', NULL, '장성읍 문화로 111', NULL, 684, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(1, '진도향토문화회관', '전라남도 진도군', '전라남도', NULL, '진도읍 진도대로 7197', NULL, 630, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(1, '포항문화예술회관 대공연장', '경상북도 포항시', '경상북도', NULL, '남구 희망대로 850', NULL, 972, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(1, '포항시청문화동 대잠홀 공연장', '경상북도 포항시', '경상북도', NULL, '남구 시청로 1', NULL, 590, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(1, '포항시립중앙아트홀', '경상북도 포항시', '경상북도', NULL, '북구 서동로 83 ', NULL, 270, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(1, '포항시청소년수련관 청소년극장', '경상북도 포항시', '경상북도', NULL, '북구 삼호로 533', NULL, 323, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(1, '효자아트홀', '경상북도 포항시', '경상북도', NULL, '남구 행복길 120 효자아트홀', NULL, 731, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(1, '경상북도교육청문화원', '경상북도 포항시', '경상북도', NULL, '북구 호로50', NULL, 1146, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(1, '아라떼소극장', '경상북도 포항시', '경상북도', NULL, '남구 상도로26번길5', NULL, 96, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(1, '100씨어터(100theater)', '경상북도 포항시', '경상북도', NULL, '북구 불종로73 석영빌딩 5층', NULL, 163, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(2, '경주예술의전당 대공연장', '경상북도 경주시', '경상북도', NULL, '알천북로 1', NULL, 1053, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(2, '경주예술의전당 소공연장', '경상북도 경주시', '경상북도', NULL, '알천북로 1', NULL, 330, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(2, '서라벌문화회관', '경상북도 경주시', '경상북도', NULL, '금성로236', NULL, 494, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(2, '문화센터 공연장', '경상북도 경주시', '경상북도', NULL, '경감로 614', NULL, 741, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(2, '신라밀레니엄파크 메인공연장', '경상북도 경주시', '경상북도', NULL, '엑스포로 55-12', NULL, 975, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(2, '신라밀레니엄파크 화랑공연장', '경상북도 경주시', '경상북도', NULL, '엑스포로 55-12', NULL, 805, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(2, '김천시문화예술회관', '경상북도 김천시', '경상북도', NULL, '운동장길 3', NULL, 920, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(2, '김천시립문화회관', '경상북도 김천시', '경상북도', NULL, '김천로 200', NULL, 421, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL');
+(2, '경북도청 동락관', '경상북도 예천군', '경상북도', NULL, '도청대로455', NULL, 886, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(2, '안동문화예술의전당(웅부홀)', '경상북도 안동시', '경상북도', NULL, '축제장길66', NULL, 994, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(2, '안동문화예술의전당(백조홀)', '경상북도 안동시', '경상북도', NULL, '축제장길66', NULL, 276, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(2, '구미문화예술회관', '경상북도 구미시', '경상북도', NULL, '송정대로 89', NULL, 1211, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(2, '강동문화복지회관', '경상북도 구미시', '경상북도', NULL, '인동가산로392', NULL, 667, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(2, '레미어린이공연장', '경상북도 구미시', '경상북도', NULL, '구미대로22길11', NULL, 184, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(2, '공터 다', '경상북도 구미시', '경상북도', NULL, '금오시장로 4 아트센터 DA 3F', NULL, 100, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL');
+(2, '영주문화예술회관', '경상북도 영주시', '경상북도', NULL, '가흥로 257(가흥동)', NULL, 498, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(2, '영주시민회관', '경상북도 영주시', '경상북도', NULL, '선비로 213', NULL, 490, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(2, '영천시민회관', '경상북도 영천시', '경상북도', NULL, '시청로 17', NULL, 791, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL');
+(2, '문경문화예술회관', '경상북도 문경시', '경상북도', NULL, '신흥로 85', NULL, 824, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(2, '문희아트홀', '경상북도 문경시', '경상북도', NULL, '신흥로 103', NULL, 310, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀');
+(2, '삼국유사교육문화회관 공연장', '경상북도 군위군', '경상북도', NULL, '군위읍 군청로 158', NULL, 457, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(2, '의성문화회관 문소홀', '경상북도 의성군', '경상북도', NULL, '의성읍 충효로68', NULL, 998, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(3, '청송문화예술회관', '경상북도 청송군', '경상북도', NULL, '청송읍 금월로 244-30', NULL, 435, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(3, '진보문화체육센터', '경상북도 청송군', '경상북도', NULL, '진보면 진보로 187', NULL, 480, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(3, '예주문화예술회관', '경상북도 영덕군', '경상북도', NULL, '영해면 318만세길 36', NULL, 610, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(3, '대가야문화누리 우륵홀', '경상북도 고령군', '경상북도', NULL, '대가야읍 왕릉로 30', NULL, 638, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(3, '대가야문화누리 가야금홀', '경상북도 고령군', '경상북도', NULL, '대가야읍 왕릉로 30', NULL, 140, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(3, '칠곡군 교육문화회관 대공연장', '경상북도 칠곡군', '경상북도', NULL, '왜관읍 관문로 1길', NULL, 710, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(3, '예천군문화회관', '경상북도 예천군', '경상북도', NULL, '예천읍 충효로 209-15', NULL, 604, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(3, '울진문화예술회관 공연장', '경상북도 울진군', '경상북도', NULL, '후포면 후포삼율로 194-14', NULL, 492, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(3, '성산아트홀 대극장', '경상남도 창원시', '경상남도', NULL, '의창구 중앙대로 181', NULL, 1690, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(3, '성산아트홀 소극장', '경상남도 창원시', '경상남도', NULL, '의창구 중앙대로 181', NULL, 510, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(3, '3·15아트센터 대극장', '경상남도 창원시', '경상남도', NULL, '마산회원구 삼호로 135', NULL, 1182, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(3, '3·15아트센터 소극장', '경상남도 창원시', '경상남도', NULL, '마산회원구 삼호로 135', NULL, 455, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(3, '진해문화센터 구민회관 공연장', '경상남도 창원시', '경상남도', NULL, '진해구 진해대로 325', NULL, 390, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(3, '도파니아트홀', '경상남도 창원시', '경상남도', NULL, '의창구 창이대로113번길 20', NULL, 90, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(3, '범블비 이벤트 아트홀', '경상남도 창원시', '경상남도', NULL, '의창구 용지로169번길 15, 602호', NULL, 153, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(3, '뉴코아아울렛소극장', '경상남도 창원시', '경상남도', NULL, '의창구 창원대로397번길 6, 4층 263호', NULL, 162, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(3, '경상남도문화예술회관 대공연장', '경상남도 창원시', '경상남도', NULL, '강남로 215', NULL, 1528, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(3, '진주시 전통예술회관 공연장', '경상남도 진주시', '경상남도', NULL, '남강로1번길 96-6', NULL, 218, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(3, '현장아트홀', '경상남도 진주시', '경상남도', NULL, '진주대로 1038', NULL, 134, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(3, 'VK아트홀', '경상남도 진주시', '경상남도', NULL, '내동면 내동로 213', NULL, 60, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(3, '날개', '경상남도 진주시', '경상남도', NULL, '진양호로 257, 2층 (평거동)', NULL, 60, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(3, '통영시민문화회관 대극장', '경상남도 통영시', '경상남도', NULL, '남망공원길 29', NULL, 880, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(4, '통영시민문화회관 소극장', '경상남도 통영시', '경상남도', NULL, '남망공원길 29', NULL, 290, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(4, '통영국제음악당 콘서트홀', '경상남도 통영시', '경상남도', NULL, '큰발개1길 38', NULL, 1309, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(4, '통영국제음악당 블랙박스', '경상남도 통영시', '경상남도', NULL, '큰발개1길 38', NULL, 254, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(4, '사천시문화예술회관(대공연장)', '경상남도 사천시', '경상남도', NULL, '삼천포대교로 471', NULL, 834, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(4, '사천시문화예술회관(소공연장)', '경상남도 사천시', '경상남도', NULL, '삼천포대교로 471', NULL, 192, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(4, '사천세계문화컨텐츠 상설공연장', '경상남도 사천시', '경상남도', NULL, '실안동 1244-2', NULL, 480, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장');
+(4, '김해문화원', '경상남도 김해시', '경상남도', NULL, '분성로 225(외동)', NULL, 218, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(4, '김해시립공연장(칠암도서관)', '경상남도 김해시', '경상남도', NULL, '활천로285번길 14(삼방동)', NULL, 310, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(4, '장유도서관 공연장', '경상남도 김해시', '경상남도', NULL, '대청로176번길 7(대청동)', NULL, 342, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(4, '김해문화의전당 마루홀', '경상남도 김해시', '경상남도', NULL, '김해대로 2060(내동)', NULL, 1464, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(4, '진영한빛도서관 누리마을', '경상남도 김해시', '경상남도', NULL, '진영읍 김해대로 440', NULL, 369, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(4, '철광산공연장(김해가야테마파크)', '경상남도 김해시', '경상남도', NULL, '가야테마길161(어방동)', NULL, 448, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(4, '공간EASY', '경상남도 김해시', '경상남도', NULL, '내외중앙로 35, 4층', NULL, 120, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(4, '김해서부문화센터 하늬홀', '경상남도 김해시', '경상남도', NULL, '율하2로 210(율하동)', NULL, 691, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(4, '명배우 봉하극장 콜로노스', '경상남도 김해시', '경상남도', NULL, '진영읍 본산1로 56번길 30', NULL, 98, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(4, '회현동 소극장', '경상남도 김해시', '경상남도', NULL, '분성로 259, 4층(봉황동)', NULL, 80, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(4, '밀양아리랑아트센터 대공연장', '경상남도 밀양시', '경상남도', NULL, '밀양대공원로 112', NULL, 810, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(4, '밀양아리랑아트센터 소공연장', '경상남도 밀양시', '경상남도', NULL, '밀양대공원로 112', NULL, 256, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(4, '거제문화예술회관 대극장', '경상남도 거제시', '경상남도', NULL, '장승로 145 (장승포동)', NULL, 1209, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(4, '거제문화예술회관 소극장', '경상남도 거제시', '경상남도', NULL, '장승로 145 (장승포동)', NULL, 430, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(4, '거제시청소년수련관 공연장', '경상남도 거제시', '경상남도', NULL, '계룡로 175 (고현동)', NULL, 404, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(4, '거제월드아트서커스', '경상남도 거제시', '경상남도', NULL, '일운면 구조라로 73', NULL, 450, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(5, '양산문화예술회관 대공연장', '경상남도 양산시', '경상남도', NULL, '중앙로 39-1(남부동)', NULL, 834, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(5, '의령군민문화회관 공연장', '경상남도 의령군', '경상남도', NULL, '의령읍 의병로24길 31-1', NULL, 354, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(5, '함안문화예술회관', '경상남도 함안군', '경상남도', NULL, '가야읍 함안대로 619-1', NULL, 510, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(5, '함안문화원 대공연장', '경상남도 함안군', '경상남도', NULL, '가야읍 선왕길 1-1', NULL, 180, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(5, '창녕문화예술회관 대공연장', '경상남도 창녕군', '경상남도', NULL, '창녕읍 우포2로 1189-25', NULL, 496, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(5, '창녕문화예술회관 소공연장', '경상남도 창녕군', '경상남도', NULL, '창녕읍 우포2로 1189-25', NULL, 196, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(5, '고성군문화체육센터 공연장', '경상남도 고성군', '경상남도', NULL, '고성읍 송학고분로 193', NULL, 271, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(5, '남해문화센터', '경상남도 남해군', '경상남도', NULL, '남해읍 선소로 12', NULL, 212, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(5, '하동문화예술회관 대공연장', '경상남도 하동군', '경상남도', NULL, '섬진강대로 2222', NULL, 646, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(5, '하동문화예술회관 소공연장', '경상남도 하동군', '경상남도', NULL, '섬진강대로 2222', NULL, 200, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(5, '산청군문화예술회관(대공연장)', '경상남도 산청군', '경상남도', NULL, '금서면 친환경로2631번길 12', NULL, 497, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(5, '함양문화예술회관 대공연장', '경상남도 함양군', '경상남도', NULL, '함양읍 필봉산길 55', NULL, 486, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(5, '함양문화예술회관 소공연장', '경상남도 함양군', '경상남도', NULL, '함양읍 필봉산길 55', NULL, 205, 0, '기타', '다양한 공연을 위한 현대적인 시설을 갖춘 공연장', NULL, 'INTERNAL'),
+(5, '거창문화센터 공연장', '경상남도 거창군', '경상남도', NULL, '거창읍 수남로 2181', NULL, 710, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(5, '거창문화원 상살미홀', '경상남도 거창군', '경상남도', NULL, '거창읍 수남로 2193-40', NULL, 252, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(5, '합천군문화예술회관', '경상남도 합천군', '경상남도', NULL, '합천읍 황강체육공원로 93', NULL, 340, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL'),
+(5, '문예회관 대극장', '제주특별자치도 제주시', '제주특별자치도', NULL, '동광로 69', NULL, 828, 0, '기타', '지역 문화 발전에 기여하는 예술 공간', NULL, 'INTERNAL'),
+(5, '문예회관 소극장', '제주특별자치도 제주시', '제주특별자치도', NULL, '동광로 69', NULL, 170, 0, '기타', '편안하고 아늑한 분위기의 소극장', NULL, 'INTERNAL'),
+(5, '제주아트센터', '제주특별자치도 제주시', '제주특별자치도', NULL, '오남로 231', NULL, 1184, 0, '기타', '클래식 공연에 최적화된 아름다운 홀', NULL, 'INTERNAL'),
+(5, '서귀포예술의전당', '제주특별자치도 서귀포시', '제주특별자치도', NULL, '태평로 270', NULL, 992, 0, '기타', '최신 음향 및 조명 시설을 갖춘 다목적 홀', NULL, 'INTERNAL')
+ON CONFLICT (name, address) DO NOTHING;
