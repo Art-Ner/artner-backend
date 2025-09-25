@@ -30,6 +30,9 @@ public class UserResponse {
         private String username;
         private String phone;
         private String profileImageUrl;
+        private String nickname;
+        private Long artistId;
+        private Long venueAdminId;
     }
 
     @Builder
@@ -48,5 +51,8 @@ public class UserResponse {
     public static class GetUserInfoResponse {
         private Long id;
         private String username;
+        private String nickname;
+        private Long artistId;
+        private Long venueAdminId;
     }
 }

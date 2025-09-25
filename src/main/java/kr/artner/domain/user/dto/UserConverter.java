@@ -28,13 +28,16 @@ public class UserConverter {
                 .build();
     }
 
-    public UserResponse.DetailInfoDTO toDetailInfo(User user) {
+    public UserResponse.DetailInfoDTO toDetailInfo(User user, Long artistId, Long venueAdminId) {
         return UserResponse.DetailInfoDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .phone(user.getPhone())
                 .profileImageUrl(user.getProfileImageUrl())
+                .nickname(user.getNickname())
+                .artistId(artistId)
+                .venueAdminId(venueAdminId)
                 .build();
     }
 
@@ -49,6 +52,7 @@ public class UserConverter {
         return UserResponse.GetUserInfoResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .nickname(user.getNickname())
                 .build();
     }
 }
