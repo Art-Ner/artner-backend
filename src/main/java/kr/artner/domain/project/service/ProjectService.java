@@ -274,7 +274,7 @@ public class ProjectService {
     }
 
     public ProjectResponse.ProjectDetailResponse getProjectDetail(Long projectId) {
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByIdWithOwnerAndUser(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
 
         // Use derived method with @EntityGraph to fetch artist

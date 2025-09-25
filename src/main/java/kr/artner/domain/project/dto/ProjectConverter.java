@@ -107,10 +107,19 @@ public class ProjectConverter {
     }
 
     public static ProjectResponse.ProjectDetailResponse toProjectDetailResponse(Project project, List<ProjectMember> members) {
-        ProjectResponse.ProjectDetailResponse.ProjectDetail projectDetail = 
+        ProjectResponse.ProjectDetailResponse.OwnerInfo ownerInfo =
+                ProjectResponse.ProjectDetailResponse.OwnerInfo.builder()
+                        .userId(project.getOwner().getUser().getId())
+                        .artistProfileId(project.getOwner().getId())
+                        .username(project.getOwner().getUser().getUsername())
+                        .artistName(project.getOwner().getArtistName())
+                        .profileImageUrl(project.getOwner().getProfileImageUrl())
+                        .build();
+
+        ProjectResponse.ProjectDetailResponse.ProjectDetail projectDetail =
                 ProjectResponse.ProjectDetailResponse.ProjectDetail.builder()
                         .id(project.getId())
-                        .ownerId(project.getOwner().getId())
+                        .owner(ownerInfo)
                         .title(project.getTitle())
                         .concept(project.getConcept())
                         .targetRegion(project.getTargetRegion())

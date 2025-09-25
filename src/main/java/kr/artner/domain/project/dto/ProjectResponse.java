@@ -118,7 +118,7 @@ public class ProjectResponse {
         @AllArgsConstructor
         public static class ProjectDetail {
             private Long id;
-            private Long ownerId;
+            private OwnerInfo owner;
             private String title;
             private String concept;
             private String targetRegion;
@@ -127,6 +127,18 @@ public class ProjectResponse {
             private ProjectStatus status;
             private LocalDateTime createdAt;
             private LocalDateTime updatedAt;
+        }
+
+        @Getter
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class OwnerInfo {
+            private Long userId;
+            private Long artistProfileId;
+            private String username;
+            private String artistName;
+            private String profileImageUrl;
         }
     }
 
