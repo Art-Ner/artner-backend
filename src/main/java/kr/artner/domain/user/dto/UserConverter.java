@@ -3,17 +3,10 @@ package kr.artner.domain.user.dto;
 import kr.artner.global.auth.oauth.enums.OAuthProvider;
 import kr.artner.domain.user.entity.User;
 import kr.artner.domain.user.enums.UserRole;
-import kr.artner.domain.artist.repository.ArtistProfileRepository;
-import kr.artner.domain.venue.repository.VenueAdminProfileRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class UserConverter {
-
-    private final ArtistProfileRepository artistProfileRepository;
-    private final VenueAdminProfileRepository venueAdminProfileRepository;
 
     public User toEntity(UserRequest.JoinDTO request) {
         return User.builder()
@@ -35,15 +28,7 @@ public class UserConverter {
                 .build();
     }
 
-    public UserResponse.DetailInfoDTO toDetailInfo(User user) {
-        Long artistId = artistProfileRepository.findByUser(user)
-                .map(profile -> profile.getId())
-                .orElse(null);
-
-        Long venueAdminId = venueAdminProfileRepository.findByUser(user)
-                .map(profile -> profile.getId())
-                .orElse(null);
-
+    public UserResponse.DetailInfoDTO toDetailInfo(User user, Long artistId, Long venueAdminId) {
         return UserResponse.DetailInfoDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -63,21 +48,11 @@ public class UserConverter {
                 .build();
     }
 
-    public UserResponse.GetUserInfoResponse toGetUserInfoResponse(User user) {
-        Long artistId = artistProfileRepository.findByUser(user)
-                .map(profile -> profile.getId())
-                .orElse(null);
-
-        Long venueAdminId = venueAdminProfileRepository.findByUser(user)
-                .map(profile -> profile.getId())
-                .orElse(null);
-
+    public static UserResponse.GetUserInfoResponse toGetUserInfoResponse(User user) {
         return UserResponse.GetUserInfoResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
-                .artistId(artistId)
-                .venueAdminId(venueAdminId)
                 .build();
     }
 }

@@ -46,6 +46,7 @@ public class UserService {
     private final ArtistGenreRepository artistGenreRepository;
     private final ArtistRoleRepository artistRoleRepository;
     private final VenueAdminService venueAdminService;
+    private final kr.artner.domain.venue.repository.VenueAdminProfileRepository venueAdminProfileRepository;
 
     @Transactional
     public UserResponse.JoinResponse join(UserRequest.JoinDTO request) {
@@ -68,7 +69,16 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse.DetailInfoDTO getMyInfo(Long userId) {
         User user = getUserOrThrow(userId);
-        return userConverter.toDetailInfo(user);
+
+        Long artistId = artistProfileRepository.findByUser(user)
+                .map(profile -> profile.getId())
+                .orElse(null);
+
+        Long venueAdminId = venueAdminProfileRepository.findByUser(user)
+                .map(profile -> profile.getId())
+                .orElse(null);
+
+        return userConverter.toDetailInfo(user, artistId, venueAdminId);
     }
 
     @Transactional
@@ -93,7 +103,16 @@ public class UserService {
     public UserResponse.DetailInfoDTO updateProfileImage(Long userId, String profileImageUrl) {
         User user = getUserOrThrow(userId);
         user.updateProfileImage(profileImageUrl);
-        return userConverter.toDetailInfo(user);
+
+        Long artistId = artistProfileRepository.findByUser(user)
+                .map(profile -> profile.getId())
+                .orElse(null);
+
+        Long venueAdminId = venueAdminProfileRepository.findByUser(user)
+                .map(profile -> profile.getId())
+                .orElse(null);
+
+        return userConverter.toDetailInfo(user, artistId, venueAdminId);
     }
 
     @Transactional
