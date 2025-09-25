@@ -35,9 +35,6 @@ public class VenueAdminService {
                 .id(venueAdminProfile.getId())
                 .profileImageUrl(venueAdminProfile.getProfileImageUrl())
                 .businessRegNumber(venueAdminProfile.getBusinessRegNumber())
-                .businessName(venueAdminProfile.getBusinessName())
-                .phone(venueAdminProfile.getPhone())
-                .description(venueAdminProfile.getDescription())
                 .userEmail(venueAdminProfile.getUser().getEmail())
                 .userName(venueAdminProfile.getUser().getUsername())
                 .build();
@@ -85,9 +82,6 @@ public class VenueAdminService {
         VenueAdminProfile venueAdminProfile = VenueAdminProfile.builder()
                 .user(user)
                 .businessRegNumber(request.getBusinessRegNumber())
-                .businessName(request.getBusinessName())
-                .phone(request.getPhone())
-                .description(request.getDescription())
                 .profileImageUrl(request.getProfileImageUrl())
                 .build();
 
@@ -96,9 +90,6 @@ public class VenueAdminService {
         return VenueResponse.CreateVenueAdminProfileResponse.builder()
                 .id(savedProfile.getId())
                 .businessRegNumber(savedProfile.getBusinessRegNumber())
-                .businessName(savedProfile.getBusinessName())
-                .phone(savedProfile.getPhone())
-                .description(savedProfile.getDescription())
                 .profileImageUrl(savedProfile.getProfileImageUrl())
                 .build();
     }
