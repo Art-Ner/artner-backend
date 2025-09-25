@@ -12,10 +12,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-
-import java.util.List;
+import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
+
+    @Query("SELECT p FROM Project p JOIN FETCH p.owner o JOIN FETCH o.user WHERE p.id = :id")
+    Optional<Project> findByIdWithOwnerAndUser(@Param("id") Long id);
 
     @Query("SELECT p FROM Project p JOIN FETCH p.owner " +
            "WHERE (:keyword IS NULL OR p.title = :keyword OR p.concept = :keyword) " +
