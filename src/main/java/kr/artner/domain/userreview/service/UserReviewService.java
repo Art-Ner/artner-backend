@@ -97,12 +97,13 @@ public class UserReviewService {
     }
 
     @Transactional(readOnly = true)
-    public UserReviewResponse.GetUserReviewsResponse getUserReviews(Long targetUserId, int page, int size) {
+    public UserReviewResponse.GetUserReviewsResponse getUserReviews(Long targetUserId, Integer limit, Integer offset) {
         // 대상 사용자 조회
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        Pageable pageable = PageRequest.of(page, size);
+        int page = offset / limit;
+        Pageable pageable = PageRequest.of(page, limit);
         Page<UserReview> reviewPage = userReviewRepository.findByTargetUserOrderByCreatedAtDesc(targetUser, pageable);
 
         List<UserReviewResponse.UserReviewItem> reviewItems = reviewPage.getContent().stream()
@@ -117,8 +118,8 @@ public class UserReviewService {
 
         PageInfo pageInfo = PageInfo.builder()
                 .totalCount(reviewPage.getTotalElements())
-                .limit(size)
-                .offset(page * size)
+                .limit(limit)
+                .offset(offset)
                 .hasMore(reviewPage.hasNext())
                 .build();
 

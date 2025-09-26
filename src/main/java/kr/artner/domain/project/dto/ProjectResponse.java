@@ -118,6 +118,7 @@ public class ProjectResponse {
         @AllArgsConstructor
         public static class ProjectDetail {
             private Long id;
+            private Long ownerId;
             private OwnerInfo owner;
             private String title;
             private String concept;
