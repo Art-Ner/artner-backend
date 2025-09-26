@@ -48,7 +48,6 @@ public class UserReviewController {
 
     @GetMapping("/{userId}")
     public ApiResponse<UserReviewResponse.GetUserReviewsResponse> getUserReviews(
-            @LoginMember User user,
             @PathVariable Long userId,
             @RequestParam(value = "limit", required = false) Integer limit,
             @RequestParam(value = "offset", required = false) Integer offset
