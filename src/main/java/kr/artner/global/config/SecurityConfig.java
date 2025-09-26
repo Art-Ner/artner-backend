@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 "/ws/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user-reviews/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/artists/*/concert-history/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
