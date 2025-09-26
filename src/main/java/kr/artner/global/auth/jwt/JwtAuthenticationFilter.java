@@ -34,12 +34,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDE_URL_PATTERN_LIST = List.of(
             "/login",
             "/css",
-            "/js", 
+            "/js",
             "/ws",
             "/token",
             "/auth",
             "/api/auth",
             "/api/users/join",
+            "/api/user-reviews",
             "/health",
             "/swagger-ui",
             "/v3/api-docs"
