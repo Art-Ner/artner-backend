@@ -38,6 +38,7 @@ public class SecurityConfig {
                                 "/health",
                                 "/ws/**"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/user-reviews/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
