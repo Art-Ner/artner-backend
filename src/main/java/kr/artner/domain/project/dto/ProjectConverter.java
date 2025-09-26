@@ -119,6 +119,7 @@ public class ProjectConverter {
         ProjectResponse.ProjectDetailResponse.ProjectDetail projectDetail =
                 ProjectResponse.ProjectDetailResponse.ProjectDetail.builder()
                         .id(project.getId())
+                        .ownerId(project.getOwner().getId())
                         .owner(ownerInfo)
                         .title(project.getTitle())
                         .concept(project.getConcept())

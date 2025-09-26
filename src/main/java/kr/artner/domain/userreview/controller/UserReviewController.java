@@ -45,4 +45,14 @@ public class UserReviewController {
         userReviewService.deleteUserReview(user, userId);
         return ApiResponse.success(null);
     }
+
+    @GetMapping("/{userId}")
+    public ApiResponse<UserReviewResponse.GetUserReviewsResponse> getUserReviews(
+            @PathVariable Long userId,
+            @RequestParam(value = "limit", required = false) Integer limit,
+            @RequestParam(value = "offset", required = false) Integer offset
+    ) {
+        UserReviewResponse.GetUserReviewsResponse response = userReviewService.getUserReviews(userId, limit, offset);
+        return ApiResponse.success(response);
+    }
 }
